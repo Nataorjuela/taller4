@@ -1,0 +1,89 @@
+{
+  "descripcion": "Taller 4 - comparacion de metaheuristicas en TSP. Cambie este archivo, no el codigo.",
+  "semilla_maestra": 2026,
+  "tamanos": [
+    20,
+    50,
+    100
+  ],
+  "presupuestos": {
+    "20": 10000,
+    "50": 30000,
+    "100": 60000
+  },
+  "semillas_publicas_instancias": [
+    101,
+    102,
+    103,
+    104,
+    105
+  ],
+  "repeticiones": 30,
+  "repeticiones_con_memoria": 5,
+  "procesos": 2,
+  "epsilon": 0.01,
+  "fracciones_control": [
+    0.01,
+    0.05,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.0
+  ],
+  "algoritmos": [
+    "GA",
+    "ACO",
+    "PSO",
+    "HC",
+    "SA"
+  ],
+  "algoritmos_extra": [
+    "ACO+2opt"
+  ],
+  "parametros": {
+    "GA": {
+      "poblacion": 50,
+      "torneo": 3,
+      "prob_cruce": 0.9,
+      "prob_mutacion": 0.3,
+      "elite": 2
+    },
+    "ACO": {
+      "hormigas": null,
+      "alfa": 1.0,
+      "beta": 2.0,
+      "rho": 0.3,
+      "Q": 1.0,
+      "elitistas": 5.0
+    },
+    "PSO": {
+      "particulas": 50,
+      "w": 0.729,
+      "c1": 1.49445,
+      "c2": 1.49445,
+      "vmax": 0.5
+    },
+    "HC": {
+      "paciencia_factor": 2.0
+    },
+    "SA": {
+      "p0": 0.2,
+      "ratio_final": 0.01,
+      "muestras_t0": 100
+    },
+    "ACO+2opt": {
+      "hormigas": null,
+      "alfa": 1.0,
+      "beta": 2.0,
+      "rho": 0.3,
+      "Q": 1.0,
+      "elitistas": 5.0,
+      "pasos_ls_factor": 5
+    }
+  },
+  "carpeta_resultados": "resultados",
+  "carpeta_figuras": "figuras",
+  "nota_parametros": "Elegidos en la fase piloto (experimentos/piloto.py, instancias 901-903, n=50). Ver resultados/piloto_resumen.csv"
+}

@@ -1,0 +1,250 @@
+% Informe del Taller 4 (máximo 8 páginas). Compila con pdfLaTeX o XeLaTeX.
+\documentclass[10pt,a4paper]{article}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \IfFileExists{lmodern.sty}{\usepackage{lmodern}\usepackage{microtype}}{}
+  \IfFileExists{spanish.ldf}{\usepackage[spanish,es-noquoting,es-tabla,es-nodecimaldot]{babel}}{%
+    \usepackage[english]{babel}%
+    \addto\captionsenglish{\renewcommand{\figurename}{Figura}\renewcommand{\tablename}{Tabla}\renewcommand{\refname}{Referencias}}}
+\else
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setdefaultlanguage{spanish}
+  \gappto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+  \usepackage{microtype}
+\fi
+\usepackage[margin=1.9cm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,booktabs,array,float,xcolor}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{../figuras/}{figuras/}}
+\setlist{itemsep=0.1em,topsep=0.2em}
+\setlength{\parskip}{0.3em}
+\setlength{\emergencystretch}{3em}
+
+\title{\textbf{Comparación experimental de GA, ACO, PSO, ascenso de colinas y temple simulado en el problema del viajante}}
+\author{Taller 4 -- Inteligencia Artificial}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+\begin{abstract}
+Se comparan cinco metaheurísticas sobre el TSP euclidiano con $n\in\{20,50,100\}$ ciudades (5 instancias por tamaño, 30 ejecuciones independientes por combinación),
+bajo un presupuesto idéntico de evaluaciones de la función objetivo (10\,000, 30\,000 y 60\,000 FEs) y semillas emparejadas. ACO obtuvo las rutas más cortas y más estables en
+todos los tamaños (error mediano 0{,}00/0{,}66/2{,}66\,\%); SA fue segundo para $n\ge50$; HC fue el más rápido (0{,}06\,s con $n=100$, $\approx90$ veces menos que ACO);
+PSO con claves aleatorias fue el peor por amplio margen. La prueba de Friedman rechazó la igualdad en los tres tamaños ($p<10^{-16}$), con un tamaño del efecto creciente
+($W=0{,}63\to0{,}92$). No existe un ganador absoluto: la mejor calidad (ACO) no coincide con el menor tiempo (HC) ni con la menor memoria (GA).
+\end{abstract}
+
+\section{Metodología}
+\textbf{Problema.} Dadas $n$ ciudades con coordenadas uniformes en $[0,100]^2$, se minimiza $f(\pi)=\sum_{k=1}^{n-1}d_{\pi_k\pi_{k+1}}+d_{\pi_n\pi_1}$ con $d_{ij}$ euclidiana y $\pi$ una permutación.
+Todas las implementaciones usan la misma matriz de distancias y la misma función objetivo, centralizadas en un objeto \texttt{Evaluador} que cuenta las FEs, conserva la mejor solución histórica
+y registra el historial (FEs, mejor costo). Ningún algoritmo puede exceder el presupuesto.
+
+\textbf{Algoritmos y codificación} (Tabla~\ref{tab:alg}). HC y SA comparten el mismo generador de vecinos 2-opt; el cambio de costo se calcula en $O(1)$ con
+$\Delta=d_{ac}+d_{bd}-d_{ab}-d_{cd}$ y cada vecino evaluado cuenta como 1 FE (se verificó que $\Delta$ coincide con recalcular $f$).
+\begin{table}[H]\centering\small
+\begin{tabular}{>{\raggedright}p{1.1cm}>{\raggedright}p{2.6cm}>{\raggedright}p{6.7cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Alg. & Representación & Operadores & Parámetros (fase piloto)\\
+\midrule
+GA & permutación & torneo, cruce OX, mutación por inversión, elitismo & $P=50$, $k=3$, $p_c=0{,}9$, $p_m=0{,}3$, élite 2\\
+ACO & ruta construida & Ant System elitista: $P(i\to j)\propto\tau_{ij}^\alpha\eta_{ij}^\beta$, $\eta=1/d$, evaporación $\rho$, depósito $Q/L_k$ & $m=n$, $\alpha=1$, $\beta=2$, $\rho=0{,}3$, $e=5$\\
+PSO & claves aleatorias, ruta $=\operatorname{argsort}(\mathbf x)$ & $\mathbf v\leftarrow w\mathbf v+c_1\mathbf r_1(\mathbf p-\mathbf x)+c_2\mathbf r_2(\mathbf g-\mathbf x)$ & $S=50$, $w=0{,}729$, $c_{1,2}=1{,}494$, $v_{\max}=0{,}5$\\
+HC & permutación & vecino 2-opt aleatorio; se acepta si mejora; reinicio tras paciencia & paciencia $=2\cdot n(n-1)/2$\\
+SA & permutación & mismo 2-opt; Metropolis $e^{-\Delta/T}$; $T_0=-\bar\Delta/\ln p_0$; $T_{k+1}=\alpha T_k$, $\alpha=r^{1/K}$ & $p_0=0{,}2$, $r=0{,}01$\\
+\bottomrule
+\end{tabular}
+\caption{Algoritmos, codificación y parámetros. Los parámetros se fijaron en una fase piloto con instancias separadas (semillas 901--903, $n=50$).}\label{tab:alg}
+\end{table}
+
+\textbf{Protocolo.} Instancias con semillas públicas 101--105; 30 repeticiones por algoritmo, tamaño e instancia (2250 corridas; 450 adicionales para el híbrido).
+La semilla de cada corrida depende de (2026, $n$, instancia, repetición) y es la misma para todos los algoritmos, lo que permite pruebas emparejadas.
+El tiempo se mide con \texttt{perf\_counter} solo alrededor del algoritmo; la memoria pico con \texttt{tracemalloc} en una segunda pasada con la misma semilla
+(repeticiones 0--4), porque \texttt{tracemalloc} ralentiza el código de forma desigual entre algoritmos. Todo se ejecutó en el mismo equipo (2 procesos).
+La configuración completa está en \texttt{configuracion.json}.
+
+\textbf{Métricas.} $f^\ast$ = mejor valor encontrado por cualquier algoritmo en todas las corridas de la instancia. Error$_r=100(f_r-f^\ast)/f^\ast$; éxito = \% de corridas con error $\le1\,\%$ ($R=30$ por instancia);
+mejora $=100(f_{\text{inicial}}-f_r)/f_{\text{inicial}}$. Las curvas de convergencia se evalúan en 50 puntos comunes de FEs antes de promediar.
+Se aplica Friedman por tamaño (150 bloques) con $W$ de Kendall, y post hoc de Wilcoxon pareado con corrección de Holm y correlación biserial de rangos.
+
+\section{Resultados}
+\subsection{Eficiencia computacional y escalabilidad}
+\begin{figure}[H]\centering
+\includegraphics[width=0.49\linewidth]{fig3a_tiempo_vs_n.png}\hfill
+\includegraphics[width=0.49\linewidth]{fig3b_memoria_vs_n.png}
+\caption{Tiempo promedio por corrida y memoria pico (\texttt{tracemalloc}) frente a $n$ (escala log; barras: $\pm1$ desviación).}\label{fig:tm}
+\end{figure}
+\begin{table}[H]\centering\small
+\begin{tabular}{clrrrrrr}
+\toprule
+$n$ & Alg. & tiempo (s) & ms/1000 FEs & memoria (MB) & éxito (\%) & FEs al 1\% (med.) & llegaron \\
+\midrule
+20 & GA & 0{,}694 & 69{,}4 & 0{,}038 & 36{,}0 & 3\,488 & 54/150 \\
+ & ACO & 0{,}284 & 28{,}4 & 0{,}038 & 99{,}3 & 242 & 149/150 \\
+ & PSO & 0{,}017 & 1{,}7 & 0{,}074 & 0{,}7 & 3\,417 & 1/150 \\
+ & HC & 0{,}009 & 0{,}9 & 0{,}209 & 73{,}3 & 3\,076 & 110/150 \\
+ & SA & 0{,}011 & 1{,}1 & 0{,}245 & 70{,}7 & 3\,324 & 106/150 \\
+\midrule
+50 & GA & 2{,}124 & 70{,}8 & 0{,}090 & 2{,}0 & 22\,710 & 3/150 \\
+ & ACO & 1{,}179 & 39{,}3 & 0{,}214 & 66{,}0 & 7\,713 & 99/150 \\
+ & PSO & 0{,}074 & 2{,}5 & 0{,}180 & 0{,}0 & -- & 0/150 \\
+ & HC & 0{,}028 & 0{,}9 & 0{,}280 & 2{,}7 & 11\,162 & 4/150 \\
+ & SA & 0{,}033 & 1{,}1 & 0{,}318 & 16{,}0 & 18\,560 & 24/150 \\
+\midrule
+100 & GA & 4{,}463 & 74{,}4 & 0{,}179 & 0{,}0 & -- & 0/150 \\
+ & ACO & 5{,}228 & 87{,}1 & 0{,}845 & 17{,}3 & 34\,784 & 26/150 \\
+ & PSO & 0{,}234 & 3{,}9 & 0{,}356 & 0{,}0 & -- & 0/150 \\
+ & HC & 0{,}058 & 1{,}0 & 0{,}532 & 0{,}0 & -- & 0/150 \\
+ & SA & 0{,}071 & 1{,}2 & 0{,}570 & 4{,}0 & 53\,696 & 6/150 \\
+\bottomrule
+\end{tabular}
+
+\caption{Tiempo, memoria, tasa de éxito y FEs necesarias para error $\le1\,\%$ (mediana entre las corridas que llegaron; ``llegaron'' de 150).}\label{tab:ef}
+\end{table}
+HC y SA son los más rápidos (0{,}06--0{,}07\,s con $n=100$) y su costo por FE es casi constante ($\approx1$\,ms/1000 FEs), gracias a la evaluación incremental $O(1)$.
+ACO escala peor en tiempo (28$\to$87\,ms/1000 FEs) porque construir una ruta cuesta $O(n^2)$, y en memoria ($\times22$ de $n=20$ a $n=100$) por sus matrices $n\times n$.
+GA usa la menor memoria pero su costo por FE ($\approx70$\,ms/1000) está dominado por operaciones en Python. En calidad, ACO es quien mejor escala: es el único que alcanza el umbral del 1\,\%
+de forma recurrente con $n=100$ (26/150 corridas; SA 6/150). Rapidez y calidad no coinciden: HC termina 90 veces antes que ACO pero con el triple de error.
+
+\subsection{Convergencia, calidad y estabilidad}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{fig4a_convergencia.png}
+\caption{Error del mejor histórico frente a FEs (media y percentiles 25--75 de 150 corridas; ejes logarítmicos, eje $y$ lineal en $[0,1]$).}\label{fig:conv}
+\end{figure}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{fig4b_cajas_error.png}
+\caption{Diagramas de caja del error relativo final (150 corridas por algoritmo y tamaño).}\label{fig:cajas}
+\end{figure}
+\begin{table}[H]\centering\small
+\begin{tabular}{clrrrrrrr}
+\toprule
+$n$ & Alg. & mejor & media & mediana & desv.$^\dagger$ & RIC & éxito (\%) & mejora (\%) \\
+\midrule
+20 & GA & 0{,}00 & 2{,}51 & 1{,}63 & 2{,}14 & 4{,}12 & 36{,}0 & 61{,}7 \\
+ & ACO & 0{,}00 & 0{,}01 & 0{,}00 & 0{,}05 & 0{,}00 & 99{,}3 & 40{,}9 \\
+ & PSO & 0{,}00 & 23{,}67 & 23{,}10 & 13{,}07 & 17{,}30 & 0{,}7 & 53{,}8 \\
+ & HC & 0{,}00 & 0{,}72 & 0{,}00 & 0{,}89 & 1{,}22 & 73{,}3 & 62{,}3 \\
+ & SA & 0{,}00 & 0{,}94 & 0{,}00 & 0{,}98 & 1{,}22 & 70{,}7 & 62{,}2 \\
+\midrule
+50 & GA & 0{,}37 & 7{,}17 & 6{,}61 & 3{,}70 & 5{,}31 & 2{,}0 & 76{,}3 \\
+ & ACO & 0{,}00 & 0{,}87 & 0{,}66 & 0{,}62 & 1{,}31 & 66{,}0 & 55{,}8 \\
+ & PSO & 55{,}13 & 102{,}71 & 101{,}72 & 19{,}69 & 27{,}99 & 0{,}0 & 55{,}5 \\
+ & HC & 0{,}00 & 4{,}80 & 4{,}41 & 2{,}36 & 3{,}09 & 2{,}7 & 76{,}8 \\
+ & SA & 0{,}00 & 2{,}91 & 2{,}50 & 2{,}06 & 2{,}61 & 16{,}0 & 77{,}2 \\
+\midrule
+100 & GA & 5{,}29 & 14{,}78 & 14{,}91 & 3{,}30 & 4{,}22 & 0{,}0 & 82{,}2 \\
+ & ACO & 0{,}00 & 2{,}73 & 2{,}66 & 0{,}89 & 3{,}04 & 17{,}3 & 63{,}5 \\
+ & PSO & 165{,}26 & 230{,}27 & 228{,}01 & 24{,}07 & 39{,}56 & 0{,}0 & 48{,}6 \\
+ & HC & 1{,}17 & 8{,}98 & 8{,}97 & 2{,}52 & 3{,}72 & 0{,}0 & 83{,}1 \\
+ & SA & 0{,}00 & 4{,}72 & 4{,}56 & 2{,}19 & 2{,}87 & 4{,}0 & 83{,}8 \\
+\bottomrule
+\end{tabular}
+
+\caption{Error relativo final (\%). $^\dagger$Desviación estándar dentro de cada instancia, promediada. El costo absoluto (mejor, media, mediana y desviación) por instancia está en \texttt{resultados/tabla\_rendimiento\_por\_instancia.csv}.}\label{tab:rend}
+\end{table}
+ACO arranca con rutas buenas gracias a la visibilidad $1/d$ y mantiene la ventaja durante todo el presupuesto (Fig.~\ref{fig:conv}). HC desciende rápido y se estanca;
+SA muestra la forma en ``S'' típica: explora con temperatura alta y cae al enfriarse, superando a HC para $n\ge50$. GA aún mejora al final del presupuesto (mejor solución en la FE mediana del 98\,\% con $n=100$);
+PSO se estanca debido a la falta de localidad de las claves aleatorias. La Fig.~\ref{fig:rutas} muestra las rutas de la corrida mediana: ACO, SA y HC no presentan cruces; PSO está lleno de ellos.
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{fig4d_rutas.png}
+\caption{Ruta de la corrida mediana de cada método en la instancia 0 con $n=50$ (entre paréntesis, error respecto a $f^\ast$).}\label{fig:rutas}
+\end{figure}
+
+\subsection{Análisis estadístico y ranking}
+\begin{table}[H]\centering\small
+\begin{tabular}{rrrrrrrrr}
+\toprule
+$n$ & $\chi^2_F$ & $p$ & $W$ & $\bar R$ GA & $\bar R$ ACO & $\bar R$ PSO & $\bar R$ HC & $\bar R$ SA \\
+\midrule
+20 & 379{,}6 & $<10^{-16}$ & 0{,}633 & 3{,}31 & 1{,}84 & 4{,}95 & 2{,}31 & 2{,}58 \\
+\midrule
+50 & 467{,}4 & $<10^{-16}$ & 0{,}779 & 3{,}50 & 1{,}31 & 5{,}00 & 3{,}02 & 2{,}17 \\
+\midrule
+100 & 549{,}5 & $<10^{-16}$ & 0{,}916 & 3{,}93 & 1{,}26 & 5{,}00 & 2{,}93 & 1{,}88 \\
+\bottomrule
+\end{tabular}
+
+\caption{Friedman ($N=150$, $k=5$) y rangos promedio (1 = mejor).}\label{tab:fried}
+\end{table}
+\begin{table}[H]\centering\footnotesize
+\begin{tabular}{llll}
+\toprule
+Par & $n=20$ & $n=50$ & $n=100$ \\
+\midrule
+GA vs ACO & ACO (0{,}88; $<10^{-4}$) & ACO (0{,}99; $<10^{-4}$) & ACO (1{,}00; $<10^{-4}$) \\
+GA vs PSO & GA ($-$0{,}99; $<10^{-4}$) & GA ($-$1{,}00; $<10^{-4}$) & GA ($-$1{,}00; $<10^{-4}$) \\
+GA vs HC & HC (0{,}70; $<10^{-4}$) & HC (0{,}54; $<10^{-4}$) & HC (0{,}96; $<10^{-4}$) \\
+GA vs SA & SA (0{,}63; $<10^{-4}$) & SA (0{,}85; $<10^{-4}$) & SA (1{,}00; $<10^{-4}$) \\
+ACO vs PSO & ACO ($-$1{,}00; $<10^{-4}$) & ACO ($-$1{,}00; $<10^{-4}$) & ACO ($-$1{,}00; $<10^{-4}$) \\
+ACO vs HC & ACO ($-$0{,}51; $<10^{-4}$) & ACO ($-$0{,}96; $<10^{-4}$) & ACO ($-$1{,}00; $<10^{-4}$) \\
+ACO vs SA & ACO ($-$0{,}63; $<10^{-4}$) & ACO ($-$0{,}77; $<10^{-4}$) & ACO ($-$0{,}66; $<10^{-4}$) \\
+PSO vs HC & HC (1{,}00; $<10^{-4}$) & HC (1{,}00; $<10^{-4}$) & HC (1{,}00; $<10^{-4}$) \\
+PSO vs SA & SA (1{,}00; $<10^{-4}$) & SA (1{,}00; $<10^{-4}$) & SA (1{,}00; $<10^{-4}$) \\
+HC vs SA & HC ($-$0{,}21; 0{,}0258) & SA (0{,}65; $<10^{-4}$) & SA (0{,}92; $<10^{-4}$) \\
+\bottomrule
+\end{tabular}
+
+\caption{Wilcoxon pareado con Holm: ganador (biserial de rangos; $p$ ajustado). Todas las diferencias son significativas a $\alpha=0{,}05$.}\label{tab:ph}
+\end{table}
+\begin{table}[H]\centering\small
+\begin{tabular}{clccccrrr}
+\toprule
+$n$ & Alg. & calidad & estab. & veloc. & global & $\bar R$ & desv. error & AUC \\
+\midrule
+20 & ACO & 1 & 1 & 1 & \textbf{1} & 1{,}84 & 0{,}05 & 2{,}5 \\
+ & HC & 2 & 2 & 2 & \textbf{2} & 2{,}31 & 0{,}89 & 22{,}9 \\
+ & SA & 3 & 3 & 3 & \textbf{3} & 2{,}58 & 0{,}98 & 64{,}2 \\
+ & GA & 4 & 4 & 4 & \textbf{4} & 3{,}31 & 2{,}14 & 79{,}1 \\
+ & PSO & 5 & 5 & 5 & \textbf{5} & 4{,}95 & 13{,}07 & 120{,}2 \\
+\midrule
+50 & ACO & 1 & 1 & 1 & \textbf{1} & 1{,}31 & 0{,}62 & 12{,}6 \\
+ & SA & 2 & 2 & 3 & \textbf{2} & 2{,}17 & 2{,}06 & 157{,}7 \\
+ & HC & 3 & 3 & 2 & \textbf{3} & 3{,}02 & 2{,}36 & 65{,}9 \\
+ & GA & 4 & 4 & 4 & \textbf{4} & 3{,}50 & 3{,}70 & 208{,}0 \\
+ & PSO & 5 & 5 & 5 & \textbf{5} & 5{,}00 & 19{,}69 & 389{,}0 \\
+\midrule
+100 & ACO & 1 & 1 & 1 & \textbf{1} & 1{,}26 & 0{,}89 & 22{,}1 \\
+ & SA & 2 & 2 & 3 & \textbf{2} & 1{,}88 & 2{,}19 & 284{,}9 \\
+ & HC & 3 & 3 & 2 & \textbf{3} & 2{,}93 & 2{,}52 & 120{,}9 \\
+ & GA & 4 & 4 & 4 & \textbf{4} & 3{,}93 & 3{,}30 & 363{,}7 \\
+ & PSO & 5 & 5 & 5 & \textbf{5} & 5{,}00 & 24{,}07 & 726{,}5 \\
+\bottomrule
+\end{tabular}
+
+\caption{Ranking por calidad (rango de Friedman), estabilidad (desviación del error dentro de instancia) y velocidad (área bajo la curva de error en $\log$ FEs).}\label{tab:rank}
+\end{table}
+Las diferencias son significativas en todos los pares y tamaños. El tamaño del efecto crece con $n$: $W$ pasa de 0{,}63 a 0{,}92 y la ventaja de ACO sobre HC de biserial 0{,}51 a 1{,}00.
+La única diferencia pequeña es HC vs.\ SA con $n=20$ (biserial $-0{,}21$, $p=0{,}026$), que se invierte con fuerza a favor de SA para $n=50$ y $n=100$.
+
+\section{Discusión}
+\begin{enumerate}[leftmargin=1.2em]
+\item \textbf{Menor costo y mayor estabilidad:} ACO en los tres tamaños (Tablas~\ref{tab:rend} y~\ref{tab:rank}).
+\item \textbf{Buenas soluciones con menos FEs:} ACO (mediana de 242 FEs para error $\le1\,\%$ con $n=20$; 7713 con $n=50$). HC es el siguiente en velocidad de convergencia.
+\item \textbf{Menor tiempo:} HC; \textbf{menor memoria:} GA. No coinciden con el de mejor calidad (ACO, el más lento con $n=100$ y el de mayor memoria).
+\item \textbf{Cambio del ranking con $n$:} extremos estables (ACO 1.º, PSO 5.º, GA 4.º); HC y SA se intercambian: con 20 ciudades los reinicios de HC bastan, con 50 y 100 la aceptación de empeoramientos de SA es decisiva.
+\item \textbf{Población vs.\ trayectoria:} la población ayuda cuando comparte información útil (feromona + heurística en ACO); en GA, con presupuesto fijo, cada generación consume $P-2$ FEs y OX rompe aristas buenas, así que converge lento;
+en PSO la codificación impide aprovechar la memoria personal y social. La trayectoria única es barata por FE y explota bien la vecindad 2-opt, pero se atasca en óptimos locales.
+\item \textbf{Aceptar empeoramientos / diversidad:} útil cuando el paisaje tiene muchos óptimos locales y hay presupuesto para enfriar: SA reduce a la mitad el error de HC con $n=50$ y $n=100$, pero con 10\,\% del presupuesto va 4--5 veces peor.
+Demasiada diversidad es dañina (piloto: GA con $p_m=0{,}6$ y $P=100$ fue 7 veces peor).
+\item \textbf{No hay ganador absoluto} (coherente con el teorema \emph{No Free Lunch}). Respuesta rápida: HC con 2-opt; alta calidad: ACO; memoria limitada: SA (una sola ruta; $O(n)$ si las distancias se calculan al vuelo).
+\end{enumerate}
+
+\textbf{Amenaza a la validez.} $f^\ast$ es el mejor valor encontrado y no el óptimo: los errores son cotas inferiores y favorecen al algoritmo que define la referencia (ACO con $n=100$).
+Además, los parámetros se ajustaron solo con $n=50$ y los tiempos mezclan algoritmo e implementación (grado de vectorización en NumPy).
+\textbf{Mejora propuesta:} usar instancias con óptimo conocido (TSPLIB o Concorde), ajuste automático de parámetros por tamaño (irace) e implementaciones compiladas para comparar tiempos.
+
+\textbf{Híbrido ACO + 2-opt (opcional).} La mejor hormiga de cada iteración se mejora con $5n$ propuestas 2-opt (mismas FEs totales). El híbrido supera a HC (92--96\,\% de corridas para $n\ge50$) y a SA (65--74\,\%) con $p<10^{-4}$,
+pero no a ACO puro: empata con $n=20$ ($p=0{,}31$) y pierde con $n=50$ y $n=100$ (error mediano 1{,}03 vs.\ 0{,}66 y 3{,}59 vs.\ 2{,}66\,\%; $p<0{,}01$). La búsqueda local consume $5n$ FEs por iteración y reduce las iteraciones de la colonia de 600 a $\approx100$;
+es 5 veces más rápido en tiempo, así que con un criterio de parada por tiempo el balance podría invertirse.
+
+\section{Conclusiones}
+Una comparación justa exige controlar el problema, el presupuesto (FEs) y las semillas, y analizar a la vez calidad, costo y variabilidad. Con ese control, ACO fue el método de mejor calidad y estabilidad,
+HC y SA los de menor costo computacional (con SA claramente mejor que HC en calidad para $n\ge50$), GA quedó en un punto intermedio que mejoraría con más presupuesto, y PSO con claves aleatorias
+resultó inadecuado para el TSP. Las conclusiones se apoyan en 150 corridas emparejadas por tamaño y en pruebas no paramétricas con corrección por comparaciones múltiples, no solo en promedios.
+
+\end{document}

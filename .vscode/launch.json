@@ -1,0 +1,93 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "★ INTERFAZ GRÁFICA (abre el navegador)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/interfaz_grafica.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Punto 1 - Interfaz común (5 algoritmos)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/demos/punto1_interfaz.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Punto 2 - Experimento rápido (~1 min)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/demos/punto2_experimento.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Punto 3 - Eficiencia y escalabilidad",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/demos/punto3_eficiencia.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Punto 4 - Rendimiento y convergencia",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/demos/punto4_rendimiento.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Punto 5 - Conclusiones y estadística",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/demos/punto5_conclusiones.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Opcional - Híbrido ACO+2opt",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/demos/opcional_hibrido.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Pruebas automáticas",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/pruebas/test_algoritmos.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Experimento COMPLETO (30-40 min)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ejecutar_experimentos.py",
+      "args": [
+        "--config",
+        "configuracion.json"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Análisis: regenerar tablas y figuras",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/experimentos/analizar_resultados.py",
+      "args": [
+        "--config",
+        "configuracion.json"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}

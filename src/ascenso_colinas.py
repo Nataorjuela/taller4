@@ -34,6 +34,6 @@ def _nucleo(ev, rng, p):
                 sin_mejora += 1
 
 
-def optimizar(distancias, presupuesto, semilla, parametros=None, medir_memoria=True):
+def optimizar(distancias, presupuesto, semilla, parametros=None, medir_memoria=True, guardar_rutas=False):
     p = {**PARAMETROS_DEFECTO, **(parametros or {})}
-    return ejecutar(_nucleo, distancias, presupuesto, semilla, p, medir_memoria)
+    return ejecutar(_nucleo, distancias, presupuesto, semilla, p, medir_memoria, guardar_rutas)

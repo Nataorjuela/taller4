@@ -69,7 +69,7 @@ class Evaluador:
     cada vez que el mejor costo mejora (curva escalonada de convergencia).
     """
 
-    def __init__(self, D: np.ndarray, presupuesto: int):
+    def __init__(self, D: np.ndarray, presupuesto: int, guardar_rutas: bool = False):
         self.D = D
         self.n = D.shape[0]
         self.presupuesto = int(presupuesto)
@@ -78,6 +78,9 @@ class Evaluador:
         self.mejor_ruta = None
         self.fe_mejor = 0
         self.historial: list[tuple[int, float]] = []
+        # Opcional (interfaz gráfica): copia de la ruta en cada mejora, para animarla
+        self.guardar_rutas = guardar_rutas
+        self.rutas_historial: list[tuple[int, float, list]] = []
 
     # --- utilidades ---------------------------------------------------------
     @property
@@ -93,6 +96,8 @@ class Evaluador:
             self.mejor_ruta = np.array(ruta, copy=True)
             self.fe_mejor = self.evaluaciones
             self.historial.append((self.evaluaciones, self.mejor_costo))
+            if self.guardar_rutas:
+                self.rutas_historial.append((self.evaluaciones, self.mejor_costo, self.mejor_ruta.tolist()))
 
     # --- evaluación completa (O(n)) ----------------------------------------
     def evaluar(self, ruta) -> float:

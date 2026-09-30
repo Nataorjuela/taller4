@@ -18,9 +18,9 @@ import numpy as np
 from .tsp import Evaluador, PresupuestoAgotado, costo_ruta, es_ruta_valida
 
 
-def ejecutar(nucleo, distancias, presupuesto, semilla, parametros, medir_memoria=True):
+def ejecutar(nucleo, distancias, presupuesto, semilla, parametros, medir_memoria=True, guardar_rutas=False):
     rng = np.random.default_rng(semilla)
-    ev = Evaluador(distancias, presupuesto)
+    ev = Evaluador(distancias, presupuesto, guardar_rutas=guardar_rutas)
 
     if medir_memoria:
         tracemalloc.start()
@@ -43,7 +43,7 @@ def ejecutar(nucleo, distancias, presupuesto, semilla, parametros, medir_memoria
     assert abs(recalculado - ev.mejor_costo) < 1e-6 * max(1.0, recalculado), \
         f"Costo reportado {ev.mejor_costo} != recalculado {recalculado}"
 
-    return {
+    salida = {
         "mejor_ruta": ruta,
         "mejor_costo": recalculado,
         "historial": ev.historial,          # pares (evaluaciones, mejor_costo)
@@ -52,3 +52,6 @@ def ejecutar(nucleo, distancias, presupuesto, semilla, parametros, medir_memoria
         "tiempo_s": tiempo,
         "memoria_mb": memoria_mb,
     }
+    if guardar_rutas:                       # usado por la interfaz gráfica (animación)
+        salida["rutas_historial"] = ev.rutas_historial
+    return salida

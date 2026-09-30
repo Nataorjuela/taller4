@@ -1,0 +1,23 @@
+{
+  "descripcion": "Version RAPIDA para demostracion (~1 minuto). Los resultados oficiales usan configuracion.json.",
+  "semilla_maestra": 2026,
+  "tamanos": [20, 50],
+  "presupuestos": {"20": 3000, "50": 6000},
+  "semillas_publicas_instancias": [101, 102],
+  "repeticiones": 3,
+  "repeticiones_con_memoria": 1,
+  "procesos": 2,
+  "epsilon": 0.01,
+  "fracciones_control": [0.01, 0.05, 0.10, 0.20, 0.40, 0.60, 0.80, 1.00],
+  "algoritmos": ["GA", "ACO", "PSO", "HC", "SA"],
+  "algoritmos_extra": [],
+  "parametros": {
+    "GA":  {"poblacion": 50, "torneo": 3, "prob_cruce": 0.9, "prob_mutacion": 0.3, "elite": 2},
+    "ACO": {"hormigas": null, "alfa": 1.0, "beta": 2.0, "rho": 0.3, "Q": 1.0, "elitistas": 5.0},
+    "PSO": {"particulas": 50, "w": 0.729, "c1": 1.49445, "c2": 1.49445, "vmax": 0.5},
+    "HC":  {"paciencia_factor": 2.0},
+    "SA":  {"p0": 0.2, "ratio_final": 0.01, "muestras_t0": 100}
+  },
+  "carpeta_resultados": "resultados_demo",
+  "carpeta_figuras": "figuras_demo"
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio TSP · Taller 4</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<header class="barra">
+  <div class="marca">
+    <svg viewBox="0 0 32 32" class="logo" aria-hidden="true">
+      <polyline points="5,24 11,8 19,14 27,6 24,25 13,21 5,24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="5" cy="24" r="2.6"/><circle cx="11" cy="8" r="2.6"/><circle cx="19" cy="14" r="2.6"/>
+      <circle cx="27" cy="6" r="2.6"/><circle cx="24" cy="25" r="2.6"/><circle cx="13" cy="21" r="2.6"/>
+    </svg>
+    <div>
+      <h1>Laboratorio de metaheurísticas</h1>
+      <p>Taller 4 · Problema del viajante (TSP) · GA, ACO, PSO, HC y SA</p>
+    </div>
+  </div>
+  <div class="acciones-barra">
+    <a class="boton-sec" href="/descargas/guia.pdf" target="_blank">Guía explicada (PDF)</a>
+    <a class="boton-sec" href="/descargas/informe.pdf" target="_blank">Informe (PDF)</a>
+  </div>
+</header>
+
+<nav class="pestanas" id="pestanas">
+  <button data-tab="ejecutar" class="activa"><span class="num">1</span>Ejecutar algoritmos</button>
+  <button data-tab="diseno"><span class="num">2</span>Diseño experimental</button>
+  <button data-tab="eficiencia"><span class="num">3</span>Eficiencia</button>
+  <button data-tab="rendimiento"><span class="num">4</span>Rendimiento</button>
+  <button data-tab="conclusiones"><span class="num">5</span>Conclusiones</button>
+  <button data-tab="hibrido"><span class="num">+</span>Híbrido (opcional)</button>
+  <button data-tab="teoria"><span class="num">?</span>Teoría rápida</button>
+</nav>
+
+<main id="contenido">
+  <div class="cargando">Cargando…</div>
+</main>
+
+<div id="tooltip" class="tooltip" hidden></div>
+<script src="graficas.js"></script>
+<script src="textos.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

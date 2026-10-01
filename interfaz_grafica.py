@@ -248,8 +248,9 @@ class Manejador(SimpleHTTPRequestHandler):
         super().__init__(*a, directory=WEB, **k)
 
     def log_message(self, fmt, *args):      # consola limpia
-        if "/api/ejecutar" in (args[0] if args else ""):
-            sys.stdout.write(time.strftime("[%H:%M:%S] ") + (fmt % args) + "\n")
+        texto = fmt % args if args else fmt
+        if "/api/ejecutar" in texto:
+            sys.stdout.write(time.strftime("[%H:%M:%S] ") + texto + "\n")
 
     def _json(self, datos, codigo=200):
         cuerpo = json.dumps(datos, ensure_ascii=False).encode("utf-8")
@@ -287,6 +288,11 @@ class Manejador(SimpleHTTPRequestHandler):
                 return self._json(limpio({"ciudades": ciudades.round(3), "f_estrella": f_est, "descripcion": desc}))
             if u.path == "/api/csv":
                 return self._json(vista_csv(q))
+            if u.path == "/favicon.ico":
+                self.send_response(204)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return None
             if u.path == "/descargas/ejecuciones.csv":
                 return self._archivo(os.path.join(RES, "ejecuciones.csv"), "text/csv; charset=utf-8")
             if u.path == "/descargas/guia.pdf":

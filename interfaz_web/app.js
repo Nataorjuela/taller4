@@ -100,9 +100,11 @@ function pintarEjecutar() {
   </div>`;
 
   // n
-  $("#seg-n").appendChild(segmentado([...cfg.tamanos, "otro"], e.n, v => {
+  const selectorN = segmentado([...cfg.tamanos, "otro"], e.n, v => {
     e.n = v; e.presupuesto = presupuestoPorDefecto(nActual()); ESTADO.ultimo = null; ESTADO.comparacion = null; pintarEjecutar();
-  }, v => v === "otro" ? "Otro" : v));
+  }, v => v === "otro" ? "Otro" : v);
+  selectorN.classList.add("selector-n");
+  $("#seg-n").appendChild(selectorN);
   if (e.n === "otro") {
     $("#campos-inst").innerHTML = `<div class="fila">
       <div><label class="campo">n (5 a 300)</label><input type="number" id="in-otron" min="5" max="300" value="${e.otroN}"></div>
@@ -267,9 +269,11 @@ async function compararTodos() {
   try {
     for (let i = 0; i < ORDEN.length; i++) {
       const a = ORDEN[i];
-      $("#estado-prog").textContent = `Ejecutando ${a} (${INFO[a].nombre})… ${i}/${ORDEN.length}`;
+      const estadoProg = $("#estado-prog");
+      if (estadoProg) estadoProg.textContent = `Ejecutando ${a} (${INFO[a].nombre})… ${i}/${ORDEN.length}`;
       res[a] = await api("/api/ejecutar", peticion(a, {}));
-      $("#barra-prog").style.width = `${100 * (i + 1) / ORDEN.length}%`;
+      const barraProg = $("#barra-prog");
+      if (barraProg) barraProg.style.width = `${100 * (i + 1) / ORDEN.length}%`;
     }
     ESTADO.comparacion = { clave: claveInstancia(), res };
     pintarComparacion();

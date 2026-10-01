@@ -101,6 +101,18 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: 1p
   border: 0; background: none; color: var(--tinta-2); padding: 6px 13px; border-radius: 7px; font: inherit; font-weight: 600; cursor: pointer;
 }
 .segmentado button.activo { background: var(--panel); color: var(--tinta); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.selector-n button { transition: background .18s ease, color .18s ease, box-shadow .18s ease; }
+.selector-n button:hover { color: var(--tinta); background: color-mix(in srgb, var(--ok) 10%, transparent); }
+.selector-n button.activo {
+  background: var(--ok);
+  color: #fff;
+  box-shadow: 0 0 0 1px var(--ok) inset, 0 1px 4px rgba(0,0,0,.16);
+}
+#seg-n .segmentado button.activo {
+  background: var(--ok);
+  color: #fff;
+  box-shadow: 0 0 0 1px var(--ok) inset, 0 1px 4px rgba(0,0,0,.16);
+}
 .check { display: flex; gap: 8px; align-items: center; margin-top: 12px; font-size: .9rem; color: var(--tinta-2); }
 .boton {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;

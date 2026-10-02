@@ -54,7 +54,7 @@ $\Delta=d_{ac}+d_{bd}-d_{ab}-d_{cd}$ y cada vecino evaluado cuenta como 1 FE (se
 Alg. & Representación & Operadores & Parámetros (fase piloto)\\
 \midrule
 GA & permutación & torneo, cruce OX, mutación por inversión, elitismo & $P=50$, $k=3$, $p_c=0{,}9$, $p_m=0{,}3$, élite 2\\
-ACO & ruta construida & Ant System elitista: $P(i\to j)\propto\tau_{ij}^\alpha\eta_{ij}^\beta$, $\eta=1/d$, evaporación $\rho$, depósito $Q/L_k$ & $m=n$, $\alpha=1$, $\beta=2$, $\rho=0{,}3$, $e=5$\\
+ACO & ruta construida & Ant System elitista: cada paso prefiere caminos con más señal acumulada y ciudades cercanas; luego evapora señal vieja y refuerza las mejores rutas & $m=n$, $\alpha=1$, $\beta=2$, $\rho=0{,}3$, $e=5$\\
 PSO & claves aleatorias, ruta $=\operatorname{argsort}(\mathbf x)$ & $\mathbf v\leftarrow w\mathbf v+c_1\mathbf r_1(\mathbf p-\mathbf x)+c_2\mathbf r_2(\mathbf g-\mathbf x)$ & $S=50$, $w=0{,}729$, $c_{1,2}=1{,}494$, $v_{\max}=0{,}5$\\
 HC & permutación & vecino 2-opt aleatorio; se acepta si mejora; reinicio tras paciencia & paciencia $=2\cdot n(n-1)/2$\\
 SA & permutación & mismo 2-opt; Metropolis $e^{-\Delta/T}$; $T_0=-\bar\Delta/\ln p_0$; $T_{k+1}=\alpha T_k$, $\alpha=r^{1/K}$ & $p_0=0{,}2$, $r=0{,}01$\\

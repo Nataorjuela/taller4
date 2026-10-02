@@ -269,6 +269,29 @@ details.json pre { background: var(--panel-2); border: 1px solid var(--borde); b
 .matriz td, .matriz th { text-align: center; font-weight: 600; }
 .rejilla-lateral > *, .rejilla-2 > *, .rejilla-3 > * { min-width: 0; }
 .matriz td.diag { background: var(--panel-2); color: var(--tinta-3); }
+.comparacion-nota {
+  background: var(--panel-2);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--acento);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+.duelos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+}
+.duelo-card {
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--c);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: #fff;
+}
+.duelo-card h4 { margin-bottom: 8px; font-size: .95rem; }
+.duelo-linea { margin-top: 6px; line-height: 1.45; }
 .leyenda-rap { font-size: .82rem; color: var(--tinta-2); margin-top: 6px; }
 .spinner { width: 16px; height: 16px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: gira .8s linear infinite; }
 @keyframes gira { to { transform: rotate(360deg); } }

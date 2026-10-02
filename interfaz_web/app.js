@@ -17,14 +17,14 @@ const varColor = a => a === "ACO+2opt" ? "var(--c-ACO2)" : `var(--c-${a})`;
 const ptoAlg = a => `<i class="punto" style="--c:${varColor(a)}"></i>`;
 const limpiarTextoRoto = raiz => {
   const pares = [
-    ["Â·", "-"], ["â€¦", "..."], ["â€“", "-"], ["â€”", "-"], ["â€º", ">"],
-    ["Ã¡", "a"], ["Ã©", "e"], ["Ã­", "i"], ["Ã³", "o"], ["Ãº", "u"], ["Ã±", "n"],
-    ["Ã", "A"], ["Ã‰", "E"], ["Ã", "I"], ["Ã“", "O"], ["Ãš", "U"], ["Ã‘", "N"],
-    ["Â¿", "¿"], ["Â¡", "¡"], ["Âº", "o"], ["Ï‡", "chi"], ["Ï€", "pi"],
-    ["Î£", "sum"], ["Î”", "Delta"], ["Î±", "alpha"], ["â‰¤", "<="], ["â‰ˆ", "~"],
-    ["âˆ’", "-"], ["â†’", "->"], ["â€œ", "\""], ["â€", "\""], ["â€™", "'"],
-    ["â—", "inicio"], ["âœ“", "OK"], ["âœ—", "X"], ["â–¶", "Ejecutar"], ["âš–", "Comparar"],
-    ["âšâš", "Pausa"], ["Ã—", "x"]
+    ["Ã¡", "á"], ["Ã©", "é"], ["Ã­", "í"], ["Ã³", "ó"], ["Ãº", "ú"], ["Ã±", "ñ"],
+    ["Ã", "Á"], ["Ã‰", "É"], ["Ã", "Í"], ["Ã“", "Ó"], ["Ãš", "Ú"], ["Ã‘", "Ñ"],
+    ["Â·", "·"], ["Â¿", "¿"], ["Â¡", "¡"], ["Âº", "º"], ["Âª", "ª"],
+    ["â€œ", '"'], ["â€", '"'], ["â€™", "'"], ["â€¦", "..."], ["â€“", "–"], ["â€”", "–"], ["â€º", "›"],
+    ["â‰ˆ", "≈"], ["â‰¤", "≤"], ["âˆ’", "-"], ["â†’", "→"], ["â¬‡", "↓"], ["â–¶", "▶"], ["âš–", "⚖"],
+    ["Ã—", "×"], ["Îµ", "ε"], ["Î”", "Δ"], ["Ï‡", "χ"], ["Ï€", "π"],
+    ["Ã¢", "a"], ["Ã¤", "ä"], ["Ã¼", "ü"], ["Ã¶", "ö"], ["Ã", "Ä"], ["Ã–", "Ö"],
+    ["ÃƒÂ", "A"], ["Ã‰", "É"], ["Ã", "Á"], ["Ä€", ""], ["â€", ""], ["Â", ""]
   ];
   const walker = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
   const nodos = [];
@@ -118,17 +118,17 @@ function mejorarTextosEjecutar(algs, activo) {
   if (intro) {
     intro.classList.add("hero-app");
     intro.innerHTML = `<h2>Encuentra una ruta corta para visitar todas las ciudades</h2>
-      <p>Elige el mapa, escoge un algoritmo y ejecutalo. Veras la ruta, cuanto tardo y que tan buena fue. Todo corre con el codigo real del taller.</p>
+      <p>Elige el mapa, escoge un algoritmo y ejecútalo. Verás la ruta, cuánto tardó y qué tan buena fue. Todo corre con el código real del taller.</p>
       <div class="pasos-rapidos"><span>1. Mapa</span><span>2. Algoritmo</span><span>3. Ejecutar</span><span>4. Comparar</span></div>`;
   }
   const tarjetas = $$("aside .tarjeta");
   if (tarjetas[0]) {
     tarjetas[0].classList.add("panel-control");
     tarjetas[0].querySelector("h3").textContent = "1. Mapa de ciudades";
-    tarjetas[0].insertAdjacentHTML("afterbegin", `<p class="ayuda">Mas ciudades significa un reto mas dificil.</p>`);
+    tarjetas[0].insertAdjacentHTML("afterbegin", `<p class="ayuda">Más ciudades significa un reto más difícil.</p>`);
   }
   const etiquetaN = $("#seg-n")?.previousElementSibling;
-  if (etiquetaN) etiquetaN.textContent = "Numero de ciudades";
+  if (etiquetaN) etiquetaN.textContent = "Número de ciudades";
   const semilla = $("#in-semilla")?.previousElementSibling;
   if (semilla) semilla.textContent = "Semilla";
   const pres = $("#in-pres")?.previousElementSibling;
@@ -138,7 +138,7 @@ function mejorarTextosEjecutar(algs, activo) {
   if (tarjetas[1]) {
     tarjetas[1].classList.add("panel-control");
     tarjetas[1].querySelector("h3").textContent = "2. Algoritmo";
-    tarjetas[1].insertAdjacentHTML("afterbegin", `<p class="ayuda">Selecciona una estrategia. La tarjeta marcada es la que se ejecutara.</p>`);
+    tarjetas[1].insertAdjacentHTML("afterbegin", `<p class="ayuda">Selecciona una estrategia. La tarjeta marcada es la que se ejecutará.</p>`);
   }
   $$(".alg").forEach(b => {
     const a = b.dataset.alg;
@@ -157,7 +157,7 @@ function mejorarTextosEjecutar(algs, activo) {
 function mejorarTextosResultado() {
   const titulos = $$(".kpi .t");
   const detalles = $$(".kpi .d");
-  [["Distancia final", "menor es mejor"], ["Cerca de la mejor", "contra la mejor conocida"], ["Cuanto mejoro", "frente a su primera ruta"], ["Mejor intento", "intentos usados"]]
+  [["Distancia final", "menor es mejor"], ["Cerca de la mejor", "contra la mejor conocida"], ["Cuánto mejoró", "frente a su primera ruta"], ["Mejor intento", "intentos usados"]]
     .forEach(([t, d], i) => {
       if (titulos[i]) titulos[i].textContent = t;
       if (detalles[i]) detalles[i].textContent = d;
@@ -166,13 +166,13 @@ function mejorarTextosResultado() {
   tarjetas.forEach(card => {
     const h3 = card.querySelector("h3");
     if (!h3) return;
-    if (h3.textContent.includes("Curva")) h3.textContent = "Como fue mejorando";
-    if (h3.textContent.includes("Verificaciones")) h3.textContent = "Comprobaciones automaticas";
+    if (h3.textContent.includes("Curva")) h3.textContent = "Cómo fue mejorando";
+    if (h3.textContent.includes("Verificaciones")) h3.textContent = "Comprobaciones automáticas";
   });
   const leyenda = $("#g-conv")?.nextElementSibling;
-  if (leyenda) leyenda.textContent = "La linea baja cuando el algoritmo encuentra una ruta mejor. Si se queda plana, paso un rato sin mejorar.";
+  if (leyenda) leyenda.textContent = "La línea baja cuando el algoritmo encuentra una ruta mejor. Si se queda plana, pasó un rato sin mejorar.";
   const sum = $("details.json summary");
-  if (sum) sum.textContent = "Ver datos tecnicos";
+  if (sum) sum.textContent = "Ver datos técnicos";
 }
 
 function pintarEjecutar() {
@@ -441,7 +441,7 @@ async function pintarDiseno() {
     <p>Para que la comparación sea justa se controlan tres cosas: el <b>problema</b> (mismas instancias), el <b>presupuesto</b> (mismas evaluaciones) y el <b>azar</b> (mismas semillas).</p></div>
   <div class="rejilla-2">
     <div class="tarjeta"><h3>¿Por qué contar evaluaciones (FEs) y no iteraciones?</h3>
-      <p>Una “iteración” no es el mismo esfuerzo en todos los algoritmos. Contar evaluaciones es como darle a cada carro <b>el mismo tanque de gasolina</b>.</p>
+      <p>Una "iteración" no es el mismo esfuerzo en todos los algoritmos. Contar evaluaciones es como darle a cada carro <b>el mismo tanque de gasolina</b>.</p>
       <table><tr><th>Algoritmo</th><th>1 iteración =</th><th>Iteraciones con n = 100</th></tr>
         <tr><td>${ptoAlg("GA")}GA</td><td>${c.parametros.GA.poblacion - c.parametros.GA.elite} hijos = ${c.parametros.GA.poblacion - c.parametros.GA.elite} FEs</td><td>≈ ${f(c.presupuestos["100"] / (c.parametros.GA.poblacion - c.parametros.GA.elite), 0)}</td></tr>
         <tr><td>${ptoAlg("ACO")}ACO</td><td>n hormigas = 100 FEs</td><td>≈ ${f(c.presupuestos["100"] / 100, 0)}</td></tr>
@@ -645,15 +645,33 @@ function pintarConclusiones() {
        La trayectoria única (HC, SA) es barata por evaluación y explota bien la vecindad 2-opt, pero puede atascarse en óptimos locales.</p>`],
     ["6. ¿Cuándo resulta útil aceptar empeoramientos (SA) o mantener diversidad?",
       `<p>Cuando hay <b>muchos óptimos locales</b> y <b>presupuesto para enfriar</b>. Con n = 20, HC ≈ SA; con n = 50 el error mediano pasa de ${pct(val(rend, "HC", 50, "error_mediana_%"))} (HC) a ${pct(val(rend, "SA", 50, "error_mediana_%"))} (SA) y con n = 100 de ${pct(val(rend, "HC", 100, "error_mediana_%"))} a ${pct(val(rend, "SA", 100, "error_mediana_%"))}.
-       Pero si el presupuesto se corta temprano, SA va perdiendo (mire su curva en “S” en la pestaña 4). Demasiada diversidad también daña: en el piloto, GA con mutación 0,6 fue mucho peor.</p>`],
+       Pero si el presupuesto se corta temprano, SA va perdiendo (mire su curva en "S" en la pestaña 4). Demasiada diversidad también daña: en el piloto, GA con mutación 0,6 fue mucho peor.</p>`],
     ["7. ¿Existe un ganador absoluto? ¿Qué usar en cada escenario?",
-      `<p><b>No.</b> Ningún algoritmo gana en calidad, tiempo y memoria a la vez (teorema “No Free Lunch”).</p>
+      `<p><b>No.</b> Ningún algoritmo gana en calidad, tiempo y memoria a la vez (teorema "No Free Lunch").</p>
        <table><tr><th>Escenario</th><th>Algoritmo recomendado</th><th class="izq">Por qué</th></tr>
          <tr><td class="izq">Respuesta rápida</td><td>${ptoAlg("HC")}HC (o SA)</td><td class="izq">milisegundos, ruta sin cruces</td></tr>
          <tr><td class="izq">Alta calidad</td><td>${ptoAlg("ACO")}ACO</td><td class="izq">mejor y más estable en todos los tamaños</td></tr>
          <tr><td class="izq">Menor memoria medida</td><td>${ptoAlg("GA")}GA</td><td class="izq">usa menos memoria en n = 50 y n = 100; en n = 20 empata prácticamente con ACO</td></tr>
          <tr><td class="izq">Memoria teórica baja</td><td>${ptoAlg("SA")}SA</td><td class="izq">puede guardar una sola ruta y calcular distancias al vuelo; 2.º en calidad</td></tr></table>`],
   ];
+
+  const fuerza = r => r >= 0.9 ? "muy clara" : r >= 0.65 ? "clara" : r >= 0.35 ? "moderada" : "pequeña";
+  const duelosResumen = ORDEN.map(a => {
+    const ganaA = [], pierdeCon = [];
+    ORDEN.filter(b => b !== a).forEach(b => {
+      const p = par(a, b);
+      const r = Math.abs(p.biserial_rangos);
+      const item = `${ptoAlg(b)}${b} <span class="sub">efecto ${f(r, 2)} · diferencia ${fuerza(r)}</span>`;
+      if (p.mejor === a) ganaA.push(item);
+      else if (p.mejor !== "empate") pierdeCon.push(item);
+    });
+    return `<div class="duelo-card" style="--c:${varColor(a)}">
+      <h4>${ptoAlg(a)}${a} · ${INFO[a].nombre}</h4>
+      <div class="duelo-linea"><b>Le gana a:</b> ${ganaA.length ? ganaA.join(", ") : "<span class='sub'>ninguno</span>"}</div>
+      <div class="duelo-linea"><b>Pierde con:</b> ${pierdeCon.length ? pierdeCon.join(", ") : "<span class='ok'>ninguno</span>"}</div>
+    </div>`;
+  }).join("");
+  const mejorDuelos = ORDEN.find(a => ORDEN.every(b => a === b || par(a, b).mejor === a)) || rangos[0].algoritmo;
 
   $("#contenido").innerHTML = `
   <div class="intro"><h2>Punto 5 · Análisis crítico, estadística y conclusiones</h2>
@@ -665,17 +683,13 @@ function pintarConclusiones() {
         <div class="kpi"><div class="t">χ² de Friedman</div><div class="v">${f(fr.chi2, 1)}</div><div class="d">${fr.bloques} carreras</div></div>
         <div class="kpi"><div class="t">Valor p</div><div class="v" style="font-size:1.2rem">${pValor(fr.p_valor)}</div><div class="d">${fr.p_valor < 0.05 ? "hay diferencias" : "sin diferencias"}</div></div>
         <div class="kpi"><div class="t">W de Kendall</div><div class="v">${f(fr.W_Kendall, 2)}</div><div class="d">0 = azar · 1 = mismo orden siempre</div></div></div>
-      <p class="sub">Idea: en cada una de las ${fr.bloques} “carreras” (instancia × repetición, misma semilla) se da un puesto a cada algoritmo. Si todos fueran iguales, cada uno quedaría en promedio de 3.º.</p></div>
+      <p class="sub">Idea: en cada una de las ${fr.bloques} "carreras" (instancia × repetición, misma semilla) se da un puesto a cada algoritmo. Si todos fueran iguales, cada uno quedaría en promedio de 3.º.</p></div>
     <div class="tarjeta"><h3>Puesto promedio (1 = mejor)</h3><div id="g-rangos"></div></div>
   </div>
-  <div class="tarjeta"><h3>¿Quién le gana a quién? (Wilcoxon pareado + corrección de Holm, n = ${n})</h3>
-    <div class="tabla-cont"><table class="matriz"><tr><th></th>${ORDEN.map(a => `<th>${a}</th>`).join("")}</tr>
-    ${ORDEN.map(a => `<tr><th class="izq">${ptoAlg(a)}${a}</th>${ORDEN.map(b => {
-      if (a === b) return `<td class="diag">—</td>`;
-      const p = par(a, b); const gana = p.mejor; const r = Math.abs(p.biserial_rangos);
-      return `<td title="p (Holm) = ${pValor(p.p_Holm)} · efecto = ${f(r, 2)}" style="background:color-mix(in srgb, ${varColor(gana === "empate" ? a : gana)} ${Math.round(12 + 40 * r)}%, transparent)">${gana === "empate" ? "empate" : gana} <span class="sub">(${f(r, 2)})</span></td>`; }).join("")}</tr>`).join("")}
-    </table></div>
-    <p class="leyenda-rap">Cada celda dice quién da rutas más cortas en ese par y, entre paréntesis, el tamaño del efecto (0 = casi iguales, 1 = gana siempre). Color más intenso = diferencia más grande. Pase el mouse para ver el valor p ajustado.</p></div>
+  <div class="tarjeta"><h3>Comparación directa entre algoritmos (n = ${n})</h3>
+    <div class="comparacion-nota"><b>Lectura rápida:</b> ${ptoAlg(mejorDuelos)}<b>${mejorDuelos}</b> es el ganador más consistente: al compararlo par por par, obtiene rutas más cortas que los demás. El efecto va de 0 a 1: cerca de 1 significa que la ventaja se repite casi siempre.</div>
+    <div class="duelos-grid">${duelosResumen}</div>
+    <p class="leyenda-rap">Cada tarjeta resume las pruebas pareadas de Wilcoxon con corrección de Holm. "Le gana a" significa que ese algoritmo produjo rutas más cortas de forma estadísticamente consistente.</p></div>
   <div class="tarjeta"><h3>Las 7 preguntas del taller, con evidencia</h3>
     ${preguntas.map(([p, r], i) => `<details class="pregunta" ${i === 0 ? "open" : ""}><summary>${p}</summary>${r}</details>`).join("")}</div>
   <div class="rejilla-2">
@@ -708,7 +722,7 @@ function pintarHibrido() {
       ${hb.map(r => `<tr><td>${ptoAlg(r.contra)}${r.contra}</td><td>${pct(r.error_mediana_hibrido)}</td><td>${pct(r.error_mediana_contra)}</td>
         <td><div class="barra-celda" style="--c:var(--c-ACO2)"><div class="b" style="width:${0.6 * r["gana_hibrido_%"]}px"></div>${f(r["gana_hibrido_%"], 1)} %</div></td>
         <td>${r.p_Holm < 1e-3 ? "< 0,001" : f(r.p_Holm, 3)}</td></tr>`).join("")}</table></div>
-      <p class="leyenda-rap">“Gana el híbrido” = % de las 150 corridas emparejadas (misma semilla) en que el híbrido encontró una ruta más corta.</p>
+      <p class="leyenda-rap">"Gana el híbrido" = % de las 150 corridas emparejadas (misma semilla) en que el híbrido encontró una ruta más corta.</p>
       <div class="explica" style="--c:var(--c-ACO2);margin-top:14px"><h4>Conclusión</h4>
         <p>El híbrido le gana con claridad a HC y a SA, pero <b>no a ACO puro</b> (empata con n = 20 y pierde con n = 50 y 100).
         La búsqueda local gasta 5n evaluaciones por iteración, así que la colonia hace muchas menos iteraciones (≈ 100 en vez de 600 con n = 100) y la feromona aprende menos.
@@ -726,14 +740,14 @@ function pintarHibrido() {
    ===================================================================== */
 function pintarTeoria() {
   $("#contenido").innerHTML = `
-  <div class="intro"><h2>Teoria rapida</h2><p>Lo minimo para entender la interfaz. El documento final de entrega esta en el <a href="/descargas/informe.pdf" target="_blank">informe en PDF</a>.</p></div>
+  <div class="intro"><h2>Teoría rápida</h2><p>Lo minimo para entender la interfaz. El documento final de entrega esta en el <a href="/descargas/informe.pdf" target="_blank">informe en PDF</a>.</p></div>
   <div class="rejilla-2">
     <div class="tarjeta"><h3>El problema del viajante (TSP)</h3>
-      <p>Un domiciliario debe visitar n casas una sola vez y volver al inicio gastando la menor distancia posible. Una solucion es un <b>orden de visita</b> o permutacion.</p>
+      <p>Un domiciliario debe visitar n casas una sola vez y volver al inicio gastando la menor distancia posible. Una solución es un <b>orden de visita</b> o permutación.</p>
       <div class="formula">\\[f(\\pi)=\\sum_{k=1}^{n-1} d(\\pi_k,\\pi_{k+1})+d(\\pi_n,\\pi_1)\\]</div>
       <p class="sub">Con 100 ciudades hay aproximadamente \\(4.7\\times10^{155}\\) rutas: imposible revisarlas todas.</p></div>
     <div class="tarjeta"><h3>Que es una metaheuristica</h3>
-      <p>Una <b>estrategia general</b> para buscar buenas soluciones sin revisarlas todas. Todas siguen la misma plantilla: generar candidatos, evaluarlos, decidir cuales conservar y recordar la mejor. No garantizan el optimo, pero encuentran rutas muy buenas con presupuesto limitado.</p></div>
+      <p>Una <b>estrategia general</b> para buscar buenas soluciones sin revisarlas todas. Todas siguen la misma plantilla: generar candidatos, evaluarlos, decidir cuáles conservar y recordar la mejor. No garantizan el óptimo, pero encuentran rutas muy buenas con presupuesto limitado.</p></div>
     <div class="tarjeta"><h3>Explorar vs. explotar</h3>
       <p><b>Explorar</b>: buscar en zonas nuevas para no quedarse atrapado. <b>Explotar</b>: afinar alrededor de lo bueno. Cada algoritmo tiene su perilla: la temperatura en SA, la mutacion en GA, la evaporacion en ACO, la inercia en PSO.</p></div>
     <div class="tarjeta"><h3>Movimiento 2-opt (vecindad de HC y SA)</h3>
@@ -761,3 +775,4 @@ observarTexto();
     $("#contenido").innerHTML = `<div class="tarjeta vacio">No se pudo conectar con el servidor. ¿Está corriendo <code>python interfaz_grafica.py</code>?<br>${e.message}</div>`;
   }
 })();
+

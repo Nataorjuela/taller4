@@ -44,6 +44,14 @@ const observarTexto = () => {
 };
 const pct = v => v === null || v === undefined ? "–" : f(v, 2) + " %";
 
+const renderMath = (raiz, intentos = 20) => {
+  if (window.MathJax?.typesetPromise) {
+    window.MathJax.typesetPromise(raiz ? [raiz] : undefined).catch(() => {});
+  } else if (intentos > 0) {
+    setTimeout(() => renderMath(raiz, intentos - 1), 120);
+  }
+};
+
 const ganadorCalidad = n => {
   const filas = (ESTADO.res.rendimiento || []).filter(r => r.n === n);
   return filas.length ? filas.sort((a, b) => a["error_mediana_%"] - b["error_mediana_%"])[0].algoritmo : "ACO";
@@ -718,24 +726,24 @@ function pintarHibrido() {
    ===================================================================== */
 function pintarTeoria() {
   $("#contenido").innerHTML = `
-  <div class="intro"><h2>Teoría rápida</h2><p>Lo mínimo para entender la interfaz. El documento final de entrega está en el <a href="/descargas/informe.pdf" target="_blank">informe en PDF</a>.</p></div>
+  <div class="intro"><h2>Teoria rapida</h2><p>Lo minimo para entender la interfaz. El documento final de entrega esta en el <a href="/descargas/informe.pdf" target="_blank">informe en PDF</a>.</p></div>
   <div class="rejilla-2">
     <div class="tarjeta"><h3>El problema del viajante (TSP)</h3>
-      <p>Un domiciliario debe visitar n casas una sola vez y volver al inicio gastando la menor distancia posible. Una solución es un <b>orden de visita</b> (permutación).</p>
-      <div class="formula">f(π) = Σ<sub>k=1</sub><sup>n−1</sup> d(π<sub>k</sub>, π<sub>k+1</sub>) + d(π<sub>n</sub>, π<sub>1</sub>)</div>
-      <p class="sub">Con 100 ciudades hay ≈ 4,7 × 10<sup>155</sup> rutas: imposible revisarlas todas.</p></div>
-    <div class="tarjeta"><h3>¿Qué es una metaheurística?</h3>
-      <p>Una <b>estrategia general</b> para buscar buenas soluciones sin revisarlas todas. Todas siguen la misma plantilla: generar candidatos → evaluarlos → decidir cuáles conservar → recordar la mejor. No garantizan el óptimo, pero encuentran rutas muy buenas con presupuesto limitado.</p></div>
+      <p>Un domiciliario debe visitar n casas una sola vez y volver al inicio gastando la menor distancia posible. Una solucion es un <b>orden de visita</b> o permutacion.</p>
+      <div class="formula">\\[f(\\pi)=\\sum_{k=1}^{n-1} d(\\pi_k,\\pi_{k+1})+d(\\pi_n,\\pi_1)\\]</div>
+      <p class="sub">Con 100 ciudades hay aproximadamente \\(4.7\\times10^{155}\\) rutas: imposible revisarlas todas.</p></div>
+    <div class="tarjeta"><h3>Que es una metaheuristica</h3>
+      <p>Una <b>estrategia general</b> para buscar buenas soluciones sin revisarlas todas. Todas siguen la misma plantilla: generar candidatos, evaluarlos, decidir cuales conservar y recordar la mejor. No garantizan el optimo, pero encuentran rutas muy buenas con presupuesto limitado.</p></div>
     <div class="tarjeta"><h3>Explorar vs. explotar</h3>
-      <p><b>Explorar</b>: buscar en zonas nuevas para no quedarse atrapado. <b>Explotar</b>: afinar alrededor de lo bueno. Cada algoritmo tiene su “perilla”: la temperatura en SA, la mutación en GA, la evaporación en ACO, la inercia en PSO.</p></div>
+      <p><b>Explorar</b>: buscar en zonas nuevas para no quedarse atrapado. <b>Explotar</b>: afinar alrededor de lo bueno. Cada algoritmo tiene su perilla: la temperatura en SA, la mutacion en GA, la evaporacion en ACO, la inercia en PSO.</p></div>
     <div class="tarjeta"><h3>Movimiento 2-opt (vecindad de HC y SA)</h3>
-      <p>Se “descruzan” dos tramos invirtiendo el pedazo de en medio. El cambio de longitud se calcula con solo 4 distancias:</p>
-      <div class="formula">Δ = d(a,c) + d(b,d) − d(a,b) − d(c,d)</div></div>
+      <p>Se descruzan dos tramos invirtiendo el pedazo de en medio. El cambio de longitud se calcula con solo 4 distancias:</p>
+      <div class="formula">\\[\\Delta=d(a,c)+d(b,d)-d(a,b)-d(c,d)\\]</div></div>
   </div>
   <div class="tarjeta"><h3>Los cinco algoritmos</h3>
-    ${[...ORDEN, "ACO+2opt"].map(a => `<div class="explica" style="--c:${varColor(a)}"><h4>${ptoAlg(a)}${a} · ${INFO[a].nombre} <span class="etiqueta">${INFO[a].familia}</span></h4><p>${INFO[a].idea}</p><div class="formula">${INFO[a].formula}</div></div>`).join("")}</div>`;
+    ${[...ORDEN, "ACO+2opt"].map(a => `<div class="explica" style="--c:${varColor(a)}"><h4>${ptoAlg(a)}${a} - ${INFO[a].nombre} <span class="etiqueta">${INFO[a].familia}</span></h4><p>${INFO[a].idea}</p>${INFO[a].formula ? `<div class="formula">${INFO[a].formula}</div>` : ""}</div>`).join("")}</div>`;
+  renderMath($("#contenido"));
 }
-
 /* Redibujar al cambiar el tamaño de la ventana (las gráficas usan el ancho real) */
 let esperaResize = null;
 window.addEventListener("resize", () => {

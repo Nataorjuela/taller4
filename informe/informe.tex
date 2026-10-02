@@ -26,7 +26,8 @@
 \setlength{\emergencystretch}{3em}
 
 \title{\textbf{Comparación experimental de GA, ACO, PSO, ascenso de colinas y temple simulado en el problema del viajante}}
-\author{Taller 4 -- Inteligencia Artificial}
+\author{Taller 4 -- Inteligencia Artificial\\[0.35em]
+\normalsize Jimmy Mill\'an, Santiago Le\'on, Natalia Orjuela}
 \date{}
 
 \begin{document}
@@ -37,7 +38,7 @@ Se comparan cinco metaheurísticas sobre el TSP euclidiano con $n\in\{20,50,100\
 bajo un presupuesto idéntico de evaluaciones de la función objetivo (10\,000, 30\,000 y 60\,000 FEs) y semillas emparejadas. ACO obtuvo las rutas más cortas y más estables en
 todos los tamaños (error mediano 0{,}00/0{,}66/2{,}66\,\%); SA fue segundo para $n\ge50$; HC fue el más rápido (0{,}06\,s con $n=100$, $\approx90$ veces menos que ACO);
 PSO con claves aleatorias fue el peor por amplio margen. La prueba de Friedman rechazó la igualdad en los tres tamaños ($p<10^{-16}$), con un tamaño del efecto creciente
-($W=0{,}63\to0{,}92$). No existe un ganador absoluto: la mejor calidad (ACO) no coincide con el menor tiempo (HC) ni con la menor memoria (GA).
+($W=0{,}63\to0{,}92$). No existe un ganador absoluto: la mejor calidad (ACO) no coincide con el menor tiempo (HC) ni con la menor memoria medida en los tamaños grandes (GA).
 \end{abstract}
 
 \section{Metodología}
@@ -108,7 +109,7 @@ $n$ & Alg. & tiempo (s) & ms/1000 FEs & memoria (MB) & éxito (\%) & FEs al 1\% 
 \end{table}
 HC y SA son los más rápidos (0{,}06--0{,}07\,s con $n=100$) y su costo por FE es casi constante ($\approx1$\,ms/1000 FEs), gracias a la evaluación incremental $O(1)$.
 ACO escala peor en tiempo (28$\to$87\,ms/1000 FEs) porque construir una ruta cuesta $O(n^2)$, y en memoria ($\times22$ de $n=20$ a $n=100$) por sus matrices $n\times n$.
-GA usa la menor memoria pero su costo por FE ($\approx70$\,ms/1000) está dominado por operaciones en Python. En calidad, ACO es quien mejor escala: es el único que alcanza el umbral del 1\,\%
+GA usa la menor memoria medida para $n=50$ y $n=100$ (con empate práctico entre GA y ACO en $n=20$), pero su costo por FE ($\approx70$\,ms/1000) está dominado por operaciones en Python. En calidad, ACO es quien mejor escala: es el único que alcanza el umbral del 1\,\%
 de forma recurrente con $n=100$ (26/150 corridas; SA 6/150). Rapidez y calidad no coinciden: HC termina 90 veces antes que ACO pero con el triple de error.
 
 \subsection{Convergencia, calidad y estabilidad}
@@ -225,13 +226,13 @@ La única diferencia pequeña es HC vs.\ SA con $n=20$ (biserial $-0{,}21$, $p=0
 \begin{enumerate}[leftmargin=1.2em]
 \item \textbf{Menor costo y mayor estabilidad:} ACO en los tres tamaños (Tablas~\ref{tab:rend} y~\ref{tab:rank}).
 \item \textbf{Buenas soluciones con menos FEs:} ACO (mediana de 242 FEs para error $\le1\text{\%}$ con $n=20$; 7713 con $n=50$). HC es el siguiente en velocidad de convergencia.
-\item \textbf{Menor tiempo:} HC; \textbf{menor memoria:} GA. No coinciden con el de mejor calidad (ACO, el más lento con $n=100$ y el de mayor memoria).
+\item \textbf{Menor tiempo:} HC; \textbf{menor memoria medida:} GA en los tamaños grandes (con empate práctico frente a ACO en $n=20$). No coinciden con el de mejor calidad: ACO es el más lento y el de mayor memoria solo con $n=100$.
 \item \textbf{Cambio del ranking con $n$:} extremos estables (ACO 1.º, PSO 5.º, GA 4.º); HC y SA se intercambian: con 20 ciudades los reinicios de HC bastan, con 50 y 100 la aceptación de empeoramientos de SA es decisiva.
 \item \textbf{Población vs.\ trayectoria:} la población ayuda cuando comparte información útil (feromona + heurística en ACO); en GA, con presupuesto fijo, cada generación consume $P-2$ FEs y OX rompe aristas buenas, así que converge lento;
 en PSO la codificación impide aprovechar la memoria personal y social. La trayectoria única es barata por FE y explota bien la vecindad 2-opt, pero se atasca en óptimos locales.
 \item \textbf{Aceptar empeoramientos / diversidad:} útil cuando el paisaje tiene muchos óptimos locales y hay presupuesto para enfriar: SA reduce a la mitad el error de HC con $n=50$ y $n=100$, pero con 10\,\% del presupuesto va 4--5 veces peor.
 Demasiada diversidad es dañina (piloto: GA con $p_m=0{,}6$ y $P=100$ fue 7 veces peor).
-\item \textbf{No hay ganador absoluto} (coherente con el teorema \emph{No Free Lunch}). Respuesta rápida: HC con 2-opt; alta calidad: ACO; memoria limitada: SA (una sola ruta; $O(n)$ si las distancias se calculan al vuelo).
+\item \textbf{No hay ganador absoluto} (coherente con el teorema \emph{No Free Lunch}). Respuesta rápida: HC con 2-opt; alta calidad: ACO; menor memoria medida en este experimento: GA. Si se busca una implementación de trayectoria con poca memoria teórica, SA puede usar una sola ruta y calcular distancias al vuelo.
 \end{enumerate}
 
 \textbf{Amenaza a la validez.} $f^\ast$ es el mejor valor encontrado y no el óptimo: los errores son cotas inferiores y favorecen al algoritmo que define la referencia (ACO con $n=100$).

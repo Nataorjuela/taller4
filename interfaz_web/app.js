@@ -628,7 +628,7 @@ function pintarConclusiones() {
        <p><b>Respuesta:</b> ACO. Su primera ruta ya es buena porque usa la cercanía (1/d) para construir. HC es el segundo en velocidad de convergencia.</p>`],
     ["3. ¿Cuál tuvo menor tiempo y consumo de memoria? ¿Coincide con el de mejor calidad?",
       `<p>${NS.map(nn => `n = ${nn}: menor tiempo <b>${mejorPor(ef, nn, "tiempo_medio_s")}</b> (${f(val(ef, mejorPor(ef, nn, "tiempo_medio_s"), nn, "tiempo_medio_s") * 1000, 1)} ms); menor memoria <b>${mejorPor(ef, nn, "memoria_media_MB")}</b> (${f(val(ef, mejorPor(ef, nn, "memoria_media_MB"), nn, "memoria_media_MB"), 3)} MB).`).join("<br>")}</p>
-       <p><b>Respuesta:</b> No coincide. El mejor en calidad (ACO) es el más lento con n = 100 y el que más memoria usa. Hay un intercambio entre calidad y costo.</p>`],
+       <p><b>Respuesta:</b> No coincide. El mejor en calidad (ACO) es el más lento con n = 100; en memoria, solo es el que más usa para n = 100. En los tamaños grandes la menor memoria medida la tiene GA. Hay un intercambio entre calidad y costo.</p>`],
     ["4. ¿Cómo cambió el ranking al aumentar el número de ciudades?",
       `<p>${NS.map(nn => `n = ${nn}: ${ordenGlobal(nn).map(a => `${ptoAlg(a)}${a}`).join(" › ")} · W de Kendall = ${f(R.friedman.find(r => r.n === nn).W_Kendall, 2)}`).join("<br>")}</p>
        <p><b>Respuesta:</b> ACO siempre 1.º y PSO siempre último. HC y SA se intercambian: con 20 ciudades los reinicios de HC bastan; con 50 y 100 aceptar empeoramientos (SA) es decisivo. El orden se vuelve más consistente (W sube).</p>`],
@@ -643,7 +643,8 @@ function pintarConclusiones() {
        <table><tr><th>Escenario</th><th>Algoritmo recomendado</th><th class="izq">Por qué</th></tr>
          <tr><td class="izq">Respuesta rápida</td><td>${ptoAlg("HC")}HC (o SA)</td><td class="izq">milisegundos, ruta sin cruces</td></tr>
          <tr><td class="izq">Alta calidad</td><td>${ptoAlg("ACO")}ACO</td><td class="izq">mejor y más estable en todos los tamaños</td></tr>
-         <tr><td class="izq">Memoria limitada</td><td>${ptoAlg("SA")}SA</td><td class="izq">guarda una sola ruta; O(n) si calcula distancias al vuelo; 2.º en calidad</td></tr></table>`],
+         <tr><td class="izq">Menor memoria medida</td><td>${ptoAlg("GA")}GA</td><td class="izq">usa menos memoria en n = 50 y n = 100; en n = 20 empata prácticamente con ACO</td></tr>
+         <tr><td class="izq">Memoria teórica baja</td><td>${ptoAlg("SA")}SA</td><td class="izq">puede guardar una sola ruta y calcular distancias al vuelo; 2.º en calidad</td></tr></table>`],
   ];
 
   $("#contenido").innerHTML = `

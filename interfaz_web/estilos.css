@@ -49,6 +49,7 @@ code, .mono { font-family: "Cascadia Code", Consolas, "SFMono-Regular", Menlo, m
 .logo { width: 40px; height: 40px; color: var(--acento); fill: var(--acento); }
 .marca h1 { font-size: 1.25rem; }
 .marca p { margin: 0; color: var(--tinta-2); font-size: .9rem; }
+.marca .estudiantes { color: var(--tinta); font-weight: 600; }
 .acciones-barra { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* ---------- pestañas ---------- */

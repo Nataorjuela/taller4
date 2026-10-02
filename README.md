@@ -79,28 +79,12 @@ python ejecutar_experimentos.py --config configuracion.json        # 3) experime
 python experimentos/analizar_resultados.py --config configuracion.json   # 4) tablas y figuras
 ```
 
-- Versión rápida (≈ 10 s, en `resultados_demo/`): `python ejecutar_experimentos.py --config configuracion_rapida.json`
 - Cada corrida se guarda apenas termina en `resultados/corridas.jsonl`. Si el proceso se interrumpe, al relanzarlo continúa donde iba.
 - Todos los parámetros están en `configuracion.json`: para repetir con otros valores se cambia ese archivo, no el código.
 
 **Importante:** los archivos de `src/` son módulos (piezas) y no se ejecutan solos. Si le da ▶ a `src/interfaz.py`,
 aparece el error *"attempted relative import with no known parent package"*. Ejecute siempre los archivos de la raíz,
 de `demos/`, de `experimentos/` o de `pruebas/`.
-
-## Scripts de consola por punto (alternativa a la interfaz)
-
-En **Ejecutar y depurar** (`Ctrl + Shift + D`) también aparecen *Punto 1 … Punto 5*, *Opcional*, *Pruebas*, etc.
-
-| Script | Qué muestra |
-|---|---|
-| `demos/punto1_interfaz.py` | los 5 algoritmos con la misma llamada, el diccionario de salida, verificaciones, rutas y curvas |
-| `demos/punto2_experimento.py` | configuración, semillas y un experimento rápido en `resultados_demo/` |
-| `demos/punto3_eficiencia.py` | tiempo, memoria, éxito, FEs al 1 % y gráficas frente a n |
-| `demos/punto4_rendimiento.py` | tabla de rendimiento, ranking, convergencia, cajas y rutas |
-| `demos/punto5_conclusiones.py` | Friedman, Wilcoxon + Holm y la evidencia de cada pregunta |
-| `demos/opcional_hibrido.py` | comparación del híbrido ACO + 2-opt |
-
----
 
 ## Semillas (reproducibilidad)
 
@@ -125,13 +109,11 @@ src/                       implementación modular
   hibrido_aco_2opt.py      híbrido opcional
   experimento.py           semillas y ejecución de una corrida
 experimentos/              piloto.py, analizar_resultados.py
-demos/                     un script de consola por punto
 pruebas/test_algoritmos.py pruebas automáticas
 ejecutar_experimentos.py   comando principal del experimento
 configuracion.json         todos los parámetros del experimento
-configuracion_rapida.json  versión corta para probar
-resultados/                CSV originales y tablas resumidas (.csv y .tex)
-figuras/                   gráficas (.png y .pdf)
+resultados/                CSV originales y tablas resumidas
+figuras/                   gráficas usadas por el informe (.png)
 informe/                   informe.tex / informe.pdf (6 páginas)
 .vscode/launch.json        menú de ejecución de VS Code
 ```
@@ -141,7 +123,6 @@ informe/                   informe.tex / informe.pdf (6 páginas)
 | Archivo | Contenido |
 |---|---|
 | `resultados/ejecuciones.csv` | una fila por corrida: algoritmo, n, instancia, repeticion, semilla, costo, error, tiempo, memoria, FEs_mejor, … |
-| `resultados/corridas.jsonl` | lo mismo + historial completo (FEs, mejor costo) |
 | `resultados/tabla_rendimiento.csv` | mejor, media, mediana, desviación, error, RIC, tasa de éxito |
 | `resultados/tabla_eficiencia.csv` | tiempo, memoria, FEs para alcanzar error ≤ 1 % |
 | `resultados/friedman.csv`, `posthoc_wilcoxon_holm.csv`, `rangos_promedio.csv` | estadística |

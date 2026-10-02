@@ -257,3 +257,90 @@ details.json pre { background: var(--panel-2); border: 1px solid var(--borde); b
 .leyenda-rap { font-size: .82rem; color: var(--tinta-2); margin-top: 6px; }
 .spinner { width: 16px; height: 16px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: gira .8s linear infinite; }
 @keyframes gira { to { transform: rotate(360deg); } }
+
+/* ---------- pulido visual 2026-10-01 ---------- */
+:root {
+  --fondo: #f3f5f7;
+  --panel-2: #f7f9fc;
+  --borde: #d9e1ea;
+  --tinta: #141820;
+  --tinta-2: #536071;
+  --tinta-3: #8490a0;
+  --rejilla: #e8edf3;
+  --acento: #256fca;
+  --acento-suave: #e7f0fb;
+  --ok: #16835c;
+  --sombra: 0 1px 2px rgba(18,28,45,.05), 0 14px 34px rgba(18,28,45,.08);
+  --radio: 8px;
+  --c-GA: #256fca; --c-ACO: #e35f2d; --c-PSO: #16966d; --c-HC: #d99200; --c-SA: #c94d7f; --c-ACO2: #167f43;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: 220px;
+  background: linear-gradient(180deg, #eaf2fb 0%, rgba(234,242,251,0) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+.barra,
+.pestanas {
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(14px);
+}
+.logo {
+  width: 44px;
+  height: 44px;
+  padding: 7px;
+  border-radius: 12px;
+  background: var(--acento-suave);
+  border: 1px solid color-mix(in srgb, var(--acento) 20%, var(--borde));
+}
+.hero-app {
+  background:
+    radial-gradient(circle at top right, rgba(22,131,92,.12), transparent 34%),
+    linear-gradient(135deg, #ffffff 0%, #edf5fb 100%);
+  border-radius: var(--radio);
+  padding: 22px 24px;
+}
+.pasos-rapidos span,
+.segmentado,
+.boton,
+.boton-sec,
+.alg,
+.kpi,
+.pregunta,
+input[type=number],
+input[type=text],
+select {
+  border-radius: var(--radio);
+}
+.panel-control { border-top-width: 3px; }
+.rejilla-lateral { grid-template-columns: minmax(300px, 360px) 1fr; }
+.rejilla-lateral aside {
+  position: sticky;
+  top: 66px;
+  align-self: start;
+}
+.boton-ejecutar {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ok) 92%, #fff), var(--ok));
+}
+.alg.activo {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 55%, transparent) inset, 0 8px 18px rgba(17,24,39,.08);
+}
+@media (max-width: 1050px) {
+  .rejilla-lateral aside { position: static; }
+}
+@media (max-width: 720px) {
+  .barra { padding: 14px 16px; }
+  .marca { align-items: flex-start; }
+  .marca h1 { font-size: 1.08rem; }
+  .marca p { font-size: .82rem; }
+  .pestanas { padding: 0 12px; }
+  .pestanas button { padding: 11px 10px 9px; font-size: .9rem; }
+  main { padding: 16px 14px 42px; }
+  .tarjeta, .hero-app { padding: 15px; }
+  .fila { flex-direction: column; align-items: stretch; }
+  .verifs { grid-template-columns: 1fr; }
+  .kpi .v { font-size: 1.18rem; }
+}

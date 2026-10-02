@@ -15,6 +15,33 @@ const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(
 const color = a => cssVar(a === "ACO+2opt" ? "--c-ACO2" : "--c-" + a) || INFO[a].hex;
 const varColor = a => a === "ACO+2opt" ? "var(--c-ACO2)" : `var(--c-${a})`;
 const ptoAlg = a => `<i class="punto" style="--c:${varColor(a)}"></i>`;
+const limpiarTextoRoto = raiz => {
+  const pares = [
+    ["Â·", "-"], ["â€¦", "..."], ["â€“", "-"], ["â€”", "-"], ["â€º", ">"],
+    ["Ã¡", "a"], ["Ã©", "e"], ["Ã­", "i"], ["Ã³", "o"], ["Ãº", "u"], ["Ã±", "n"],
+    ["Ã", "A"], ["Ã‰", "E"], ["Ã", "I"], ["Ã“", "O"], ["Ãš", "U"], ["Ã‘", "N"],
+    ["Â¿", "¿"], ["Â¡", "¡"], ["Âº", "o"], ["Ï‡", "chi"], ["Ï€", "pi"],
+    ["Î£", "sum"], ["Î”", "Delta"], ["Î±", "alpha"], ["â‰¤", "<="], ["â‰ˆ", "~"],
+    ["âˆ’", "-"], ["â†’", "->"], ["â€œ", "\""], ["â€", "\""], ["â€™", "'"],
+    ["â—", "inicio"], ["âœ“", "OK"], ["âœ—", "X"], ["â–¶", "Ejecutar"], ["âš–", "Comparar"],
+    ["âšâš", "Pausa"], ["Ã—", "x"]
+  ];
+  const walker = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
+  const nodos = [];
+  while (walker.nextNode()) nodos.push(walker.currentNode);
+  nodos.forEach(n => {
+    let t = n.nodeValue;
+    pares.forEach(([a, b]) => { t = t.split(a).join(b); });
+    if (t !== n.nodeValue) n.nodeValue = t;
+  });
+};
+const observarTexto = () => {
+  const obs = new MutationObserver(muts => {
+    if (muts.some(m => m.addedNodes.length || m.type === "characterData")) limpiarTextoRoto(document.body);
+  });
+  obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+  limpiarTextoRoto(document.body);
+};
 const pct = v => v === null || v === undefined ? "–" : f(v, 2) + " %";
 
 const ganadorCalidad = n => {
@@ -42,6 +69,7 @@ function irA(tab) {
     rendimiento: pintarRendimiento, conclusiones: pintarConclusiones, hibrido: pintarHibrido, teoria: pintarTeoria }[tab];
   window.scrollTo({ top: 0 });
   pintar();
+  limpiarTextoRoto($("#contenido"));
 }
 $$("#pestanas button").forEach(b => b.addEventListener("click", () => irA(b.dataset.tab)));
 
@@ -472,8 +500,8 @@ function pintarEficiencia() {
   const at100 = k => [...ORDEN].sort((a, b) => val(ef, a, 100, k) - val(ef, b, 100, k));
   $("#contenido").innerHTML = `
   <div class="intro"><h2>Punto 3 · Eficiencia computacional y escalabilidad</h2>
-    <p>¿Cuánto <b>tiempo</b> y <b>memoria</b> gasta cada algoritmo y cómo crece eso al pasar de 20 a 50 y 100 ciudades? Ojo: <b>rápido no es lo mismo que bueno</b>.</p></div>
-  <div class="tarjeta" style="padding:12px 18px"><div class="cabeza" style="margin:0"><b>Mostrar algoritmos:</b><div id="chips3"></div></div></div>
+    <p>¿Cuánto <b>tiempo</b> y <b>memoria</b> gasta cada algoritmo y cómo crece eso al pasar de 20 a 50 y 100 ciudades?</p></div>
+  <div class="tarjeta" style="padding:12px 18px"><div class="cabeza" style="margin:0"><div id="chips3"></div></div></div>
   <div class="rejilla-2">
     <div class="tarjeta"><h3>(a) Tiempo promedio por corrida</h3><div id="g31"></div></div>
     <div class="tarjeta"><h3>(b) Memoria pico promedio (tracemalloc)</h3><div id="g32"></div></div>
@@ -715,6 +743,7 @@ window.addEventListener("resize", () => {
 });
 
 /* ------------------------------ inicio ------------------------------ */
+observarTexto();
 (async () => {
   try {
     [ESTADO.config, ESTADO.res] = await Promise.all([api("/api/config"), api("/api/resultados")]);

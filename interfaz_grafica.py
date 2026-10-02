@@ -295,8 +295,6 @@ class Manejador(SimpleHTTPRequestHandler):
                 return None
             if u.path == "/descargas/ejecuciones.csv":
                 return self._archivo(os.path.join(RES, "ejecuciones.csv"), "text/csv; charset=utf-8")
-            if u.path == "/descargas/guia.pdf":
-                return self._archivo(os.path.join(RAIZ, "guia", "guia_taller4.pdf"), "application/pdf")
             if u.path == "/descargas/informe.pdf":
                 return self._archivo(os.path.join(RAIZ, "informe", "informe.pdf"), "application/pdf")
         except Exception as e:  # noqa: BLE001

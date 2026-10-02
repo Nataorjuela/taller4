@@ -39,5 +39,5 @@ for n in (20, 50, 100):
     orden = rk[rk.n == n].sort_values("pos_global")["algoritmo"].tolist()
     print(f"4. Ranking global: {' > '.join(orden)}")
 print("""
-5-7. Ver la guía (sección Punto 5): población vs trayectoria, cuándo aceptar
+5-7. Ver el informe (sección de conclusiones): población vs trayectoria, cuándo aceptar
      empeoramientos, y por qué NO hay un ganador absoluto (No Free Lunch).""")

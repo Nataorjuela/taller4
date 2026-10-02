@@ -689,7 +689,7 @@ function pintarHibrido() {
    ===================================================================== */
 function pintarTeoria() {
   $("#contenido").innerHTML = `
-  <div class="intro"><h2>Teoría rápida</h2><p>Lo mínimo para entender la interfaz. La explicación completa está en la <a href="/descargas/guia.pdf" target="_blank">guía en PDF</a>.</p></div>
+  <div class="intro"><h2>Teoría rápida</h2><p>Lo mínimo para entender la interfaz. El documento final de entrega está en el <a href="/descargas/informe.pdf" target="_blank">informe en PDF</a>.</p></div>
   <div class="rejilla-2">
     <div class="tarjeta"><h3>El problema del viajante (TSP)</h3>
       <p>Un domiciliario debe visitar n casas una sola vez y volver al inicio gastando la menor distancia posible. Una solución es un <b>orden de visita</b> (permutación).</p>

@@ -53,7 +53,7 @@ Todo se ve en una sola ventana, organizada en pestañas que siguen los puntos de
 | **4 · Rendimiento** | Curvas de convergencia con banda, diagramas de caja, tabla de rendimiento, costos por instancia, rutas de la corrida mediana de cada método y ranking. |
 | **5 · Conclusiones** | Friedman, puesto promedio, matriz de Wilcoxon + Holm ("quién le gana a quién") y las 7 preguntas respondidas con los números. |
 | **Híbrido (opcional)** | ACO + 2-opt frente a ACO, HC y SA, con prueba estadística. |
-| **Teoría rápida** | Resumen del TSP, qué es una metaheurística y los cinco algoritmos. Enlaces a la guía y al informe en PDF. |
+| **Teoría rápida** | Resumen del TSP, qué es una metaheurística y los cinco algoritmos. Incluye enlace al informe final en PDF. |
 
 En las gráficas:
 
@@ -124,7 +124,7 @@ src/                       implementación modular
   temple_simulado.py       SA con criterio de Metropolis y enfriamiento geométrico
   hibrido_aco_2opt.py      híbrido opcional
   experimento.py           semillas y ejecución de una corrida
-experimentos/              piloto.py, analizar_resultados.py, tablas_guia.py
+experimentos/              piloto.py, analizar_resultados.py
 demos/                     un script de consola por punto
 pruebas/test_algoritmos.py pruebas automáticas
 ejecutar_experimentos.py   comando principal del experimento
@@ -133,7 +133,6 @@ configuracion_rapida.json  versión corta para probar
 resultados/                CSV originales y tablas resumidas (.csv y .tex)
 figuras/                   gráficas (.png y .pdf)
 informe/                   informe.tex / informe.pdf (6 páginas)
-guia/                      guía explicada (.tex y .pdf)
 .vscode/launch.json        menú de ejecución de VS Code
 ```
 
@@ -155,11 +154,10 @@ guia/                      guía explicada (.tex y .pdf)
 - **Memoria pico:** se mide con `tracemalloc` en una segunda pasada con la misma semilla, para las repeticiones 0–4 de cada instancia.
 - **`f*` (referencia del error):** es la mejor ruta encontrada por cualquier algoritmo en todas las corridas de esa instancia.
 
-## Guía explicada e informe
+## Informe final
 
-- `guia/guia_taller4.tex` es un solo archivo LaTeX autocontenido; solo necesita la carpeta `figuras/`. `guia/guia_taller4.pdf` es su versión compilada.
 - `informe/informe.tex` y `informe/informe.pdf` son el informe de entrega.
 
-Ambos compilan con pdfLaTeX o XeLaTeX. En VS Code, con la extensión LaTeX Workshop, basta con guardar.
+El informe compila con pdfLaTeX o XeLaTeX. En VS Code, con la extensión LaTeX Workshop, basta con guardar.
 
 Probado con Python 3.11 (NumPy 2.4, pandas 3.0, SciPy 1.17, Matplotlib 3.10) y Chrome/Edge.

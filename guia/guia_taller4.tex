@@ -698,14 +698,14 @@ en \emph{todas} las corridas) y $f_r$ el resultado de la corrida $r$:
 \text{Éxito}(\%)&=100\,\frac{\#\{r:\ \text{Error}_r\le\varepsilon\}}{R},\\
 \text{Mejora}(\%)&=100\,\frac{f_{\text{inicial}}-f_r}{f_{\text{inicial}}},
 \end{align*}
-con $\varepsilon=1\,\%$ y $R=30$. El error dice ``qué tan lejos quedé del mejor conocido''; la tasa de éxito dice ``en cuántas de mis 30 corridas
+con $\varepsilon=1\text{\%}$ y $R=30$. El error dice ``qué tan lejos quedé del mejor conocido''; la tasa de éxito dice ``en cuántas de mis 30 corridas
 quedé a menos de 1\,\%''.
 \end{mate}
 
 % =====================================================================
 \section{Punto 3: eficiencia computacional y escalabilidad}\label{sec:p3}
 % =====================================================================
-\textbf{Qué pide:} comparar tiempo, memoria y \FEs\ necesarias para llegar a error $\le1\,\%$; gráficas de tiempo y memoria contra $n$;
+\textbf{Qué pide:} comparar tiempo, memoria y \FEs\ necesarias para llegar a error $\le1\text{\%}$; gráficas de tiempo y memoria contra $n$;
 tabla de tasa de éxito y \FEs\ al umbral; y decir quién escala mejor y por qué. Además advierte: \emph{no confundir rapidez con calidad}.
 
 \begin{idea}
@@ -747,7 +747,7 @@ $n$ & Alg. & tiempo (s) & ms/1000 FEs & memoria (MB) & éxito (\%) & FEs al 1\% 
 \end{tabular}
 
 \caption{Eficiencia por tamaño. ``ms/1000 FEs'': milisegundos por cada mil evaluaciones. ``FEs al 1\,\%'': mediana de las evaluaciones que tardó
-en llegar a error $\le1\,\%$, calculada \emph{solo entre las corridas que llegaron}; ``llegaron'' dice cuántas de las 150 lo lograron.}
+en llegar a error $\le1\text{\%}$, calculada \emph{solo entre las corridas que llegaron}; ``llegaron'' dice cuántas de las 150 lo lograron.}
 \end{table}
 
 \subsection{Lectura de los resultados}
@@ -785,7 +785,7 @@ Depende de qué entendamos por ``escalar'', y por eso hay que mirar las dos cosa
 \item \textbf{En costo computacional}, escalan mejor \textbf{HC y SA}: tiempo por FE constante y memoria pequeña.
 \item \textbf{En calidad}, escala mejor \textbf{ACO}: su error mediano pasa de 0\,\% a 0{,}7\,\% y a 2{,}7\,\%; el de SA de 0 a 2{,}5 y a 4{,}6\,\%;
       el de HC de 0 a 4{,}4 y a 9{,}0\,\%; el de GA de 1{,}6 a 6{,}6 y a 14{,}9\,\%; y PSO se dispara de 23 a 228\,\%.
-\item Tasa de éxito ($\le1\,\%$): ACO 99\,\%\,/\,66\,\%\,/\,17\,\%, SA 71/16/4\,\%, HC 73/3/0\,\%, GA 36/2/0\,\%, PSO $\approx0$.
+\item Tasa de éxito ($\le1\text{\%}$): ACO 99\,\%\,/\,66\,\%\,/\,17\,\%, SA 71/16/4\,\%, HC 73/3/0\,\%, GA 36/2/0\,\%, PSO $\approx0$.
       Con $n=100$ \emph{solo ACO y SA} llegan alguna vez al umbral.
 \end{itemize}
 
@@ -796,7 +796,7 @@ Depende de qué entendamos por ``escalar'', y por eso hay que mirar las dos cosa
 \end{figure}
 
 \begin{porque}[{Rapidez no es calidad}]
-HC termina una corrida con $n=100$ en 0{,}06\,s, pero su ruta es $\approx9\,\%$ más larga que la mejor conocida; ACO tarda 80 veces más y queda a $\approx2{,}7\,\%$.
+HC termina una corrida con $n=100$ en 0{,}06\,s, pero su ruta es $\approx9\text{\%}$ más larga que la mejor conocida; ACO tarda 80 veces más y queda a $\approx2{,}7\text{\%}$.
 PSO es el tercero más rápido y el peor en calidad por lejos. Terminar antes no significa haber encontrado algo bueno: por eso el taller pide
 reportar tiempo \emph{y} calidad, y por eso el presupuesto se mide en \FEs\ y no en segundos.
 \end{porque}
@@ -874,7 +874,7 @@ $n$ & Alg. & mejor & media & mediana & desv.$^\dagger$ & RIC & éxito (\%) & mej
 \end{tabular}
 
 \caption{Error relativo final (\%) respecto a $f^\ast$ sobre las 150 corridas de cada tamaño. $^\dagger$Desviación estándar calculada \emph{dentro} de cada instancia y promediada
-(así no se mezcla la variación entre instancias con la del algoritmo). Éxito: \% de corridas con error $\le1\,\%$. Mejora: $100(f_{\text{inicial}}-f_r)/f_{\text{inicial}}$.}
+(así no se mezcla la variación entre instancias con la del algoritmo). Éxito: \% de corridas con error $\le1\text{\%}$. Mejora: $100(f_{\text{inicial}}-f_r)/f_{\text{inicial}}$.}
 \end{table}
 
 \begin{porque}[{¿Por qué la tabla principal usa el error y no el costo?}]
@@ -1023,7 +1023,7 @@ Friedman solo dice ``hay diferencias en algún lado''. Para saber entre qué par
 
 \begin{mate}[{Corrección de Holm}]
 Al hacer 10 pruebas, la probabilidad de encontrar \emph{al menos un} falso positivo crece mucho (si cada una tiene 5\,\% de riesgo, con 10 pruebas
-el riesgo total puede llegar a $\approx40\,\%$). Holm lo corrige:
+el riesgo total puede llegar a $\approx40\text{\%}$). Holm lo corrige:
 \begin{enumerate}
 \item Ordena los $m$ valores $p$ de menor a mayor: $p_{(1)}\le p_{(2)}\le\dots\le p_{(m)}$.
 \item Ajusta: $p^{\text{Holm}}_{(i)}=\max_{l\le i}\ \min\{1,\ (m-l+1)\,p_{(l)}\}$.
@@ -1267,4 +1267,3 @@ Pedido & Dónde está \\
 \end{description}
 
 \end{document}
-

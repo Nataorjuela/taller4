@@ -68,7 +68,7 @@ El tiempo se mide con \texttt{perf\_counter} solo alrededor del algoritmo; la me
 (repeticiones 0--4), porque \texttt{tracemalloc} ralentiza el código de forma desigual entre algoritmos. Todo se ejecutó en el mismo equipo (2 procesos).
 La configuración completa está en \texttt{configuracion.json}.
 
-\textbf{Métricas.} $f^\ast$ = mejor valor encontrado por cualquier algoritmo en todas las corridas de la instancia. Error$_r=100(f_r-f^\ast)/f^\ast$; éxito = \% de corridas con error $\le1\,\%$ ($R=30$ por instancia);
+\textbf{Métricas.} $f^\ast$ = mejor valor encontrado por cualquier algoritmo en todas las corridas de la instancia. Error$_r=100(f_r-f^\ast)/f^\ast$; éxito = \% de corridas con error $\le1\text{\%}$ ($R=30$ por instancia);
 mejora $=100(f_{\text{inicial}}-f_r)/f_{\text{inicial}}$. Las curvas de convergencia se evalúan en 50 puntos comunes de FEs antes de promediar.
 Se aplica Friedman por tamaño (150 bloques) con $W$ de Kendall, y post hoc de Wilcoxon pareado con corrección de Holm y correlación biserial de rangos.
 
@@ -104,7 +104,7 @@ $n$ & Alg. & tiempo (s) & ms/1000 FEs & memoria (MB) & éxito (\%) & FEs al 1\% 
 \bottomrule
 \end{tabular}
 
-\caption{Tiempo, memoria, tasa de éxito y FEs necesarias para error $\le1\,\%$ (mediana entre las corridas que llegaron; ``llegaron'' de 150).}\label{tab:ef}
+\caption{Tiempo, memoria, tasa de éxito y FEs necesarias para error $\le1\text{\%}$ (mediana entre las corridas que llegaron; ``llegaron'' de 150).}\label{tab:ef}
 \end{table}
 HC y SA son los más rápidos (0{,}06--0{,}07\,s con $n=100$) y su costo por FE es casi constante ($\approx1$\,ms/1000 FEs), gracias a la evaluación incremental $O(1)$.
 ACO escala peor en tiempo (28$\to$87\,ms/1000 FEs) porque construir una ruta cuesta $O(n^2)$, y en memoria ($\times22$ de $n=20$ a $n=100$) por sus matrices $n\times n$.
@@ -224,7 +224,7 @@ La única diferencia pequeña es HC vs.\ SA con $n=20$ (biserial $-0{,}21$, $p=0
 \section{Discusión}
 \begin{enumerate}[leftmargin=1.2em]
 \item \textbf{Menor costo y mayor estabilidad:} ACO en los tres tamaños (Tablas~\ref{tab:rend} y~\ref{tab:rank}).
-\item \textbf{Buenas soluciones con menos FEs:} ACO (mediana de 242 FEs para error $\le1\,\%$ con $n=20$; 7713 con $n=50$). HC es el siguiente en velocidad de convergencia.
+\item \textbf{Buenas soluciones con menos FEs:} ACO (mediana de 242 FEs para error $\le1\text{\%}$ con $n=20$; 7713 con $n=50$). HC es el siguiente en velocidad de convergencia.
 \item \textbf{Menor tiempo:} HC; \textbf{menor memoria:} GA. No coinciden con el de mejor calidad (ACO, el más lento con $n=100$ y el de mayor memoria).
 \item \textbf{Cambio del ranking con $n$:} extremos estables (ACO 1.º, PSO 5.º, GA 4.º); HC y SA se intercambian: con 20 ciudades los reinicios de HC bastan, con 50 y 100 la aceptación de empeoramientos de SA es decisiva.
 \item \textbf{Población vs.\ trayectoria:} la población ayuda cuando comparte información útil (feromona + heurística en ACO); en GA, con presupuesto fijo, cada generación consume $P-2$ FEs y OX rompe aristas buenas, así que converge lento;

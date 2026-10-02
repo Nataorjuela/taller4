@@ -17,6 +17,16 @@ const varColor = a => a === "ACO+2opt" ? "var(--c-ACO2)" : `var(--c-${a})`;
 const ptoAlg = a => `<i class="punto" style="--c:${varColor(a)}"></i>`;
 const pct = v => v === null || v === undefined ? "–" : f(v, 2) + " %";
 
+const ganadorCalidad = n => {
+  const filas = (ESTADO.res.rendimiento || []).filter(r => r.n === n);
+  return filas.length ? filas.sort((a, b) => a["error_mediana_%"] - b["error_mediana_%"])[0].algoritmo : "ACO";
+};
+const ganadorRapidez = n => {
+  const filas = (ESTADO.res.eficiencia || []).filter(r => r.n === n);
+  return filas.length ? filas.sort((a, b) => a.tiempo_medio_s - b.tiempo_medio_s)[0].algoritmo : "HC";
+};
+const resumenAlgoritmo = a => `<p>${INFO[a].idea}</p><p class="respuesta">${INFO[a].simple}</p><p class="sub">${INFO[a].como}</p>`;
+
 async function api(url, cuerpo) {
   const r = await fetch(url, cuerpo ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) } : {});
   const d = await r.json();
@@ -67,6 +77,68 @@ function presupuestoPorDefecto(n) {
 }
 function nActual() { return ESTADO.ej.n === "otro" ? Number(ESTADO.ej.otroN) : Number(ESTADO.ej.n); }
 
+function mejorarTextosEjecutar(algs, activo) {
+  const intro = $(".intro");
+  if (intro) {
+    intro.classList.add("hero-app");
+    intro.innerHTML = `<h2>Encuentra una ruta corta para visitar todas las ciudades</h2>
+      <p>Elige el mapa, escoge un algoritmo y ejecutalo. Veras la ruta, cuanto tardo y que tan buena fue. Todo corre con el codigo real del taller.</p>
+      <div class="pasos-rapidos"><span>1. Mapa</span><span>2. Algoritmo</span><span>3. Ejecutar</span><span>4. Comparar</span></div>`;
+  }
+  const tarjetas = $$("aside .tarjeta");
+  if (tarjetas[0]) {
+    tarjetas[0].classList.add("panel-control");
+    tarjetas[0].querySelector("h3").textContent = "1. Mapa de ciudades";
+    tarjetas[0].insertAdjacentHTML("afterbegin", `<p class="ayuda">Mas ciudades significa un reto mas dificil.</p>`);
+  }
+  const etiquetaN = $("#seg-n")?.previousElementSibling;
+  if (etiquetaN) etiquetaN.textContent = "Numero de ciudades";
+  const semilla = $("#in-semilla")?.previousElementSibling;
+  if (semilla) semilla.textContent = "Semilla";
+  const pres = $("#in-pres")?.previousElementSibling;
+  if (pres) pres.textContent = "Intentos permitidos";
+  const mem = $("#in-mem")?.closest("label");
+  if (mem) mem.lastChild.textContent = " Medir memoria";
+  if (tarjetas[1]) {
+    tarjetas[1].classList.add("panel-control");
+    tarjetas[1].querySelector("h3").textContent = "2. Algoritmo";
+    tarjetas[1].insertAdjacentHTML("afterbegin", `<p class="ayuda">Selecciona una estrategia. La tarjeta marcada es la que se ejecutara.</p>`);
+  }
+  $$(".alg").forEach(b => {
+    const a = b.dataset.alg;
+    b.innerHTML = `<b>${a}</b><span>${INFO[a].nombre}</span><small>${INFO[a].familia}</small>${a === "ACO+2opt" ? '<span class="tag">opcional</span>' : ""}`;
+  });
+  if (tarjetas[2]) {
+    tarjetas[2].classList.add("panel-control");
+    tarjetas[2].querySelector("h3").textContent = `3. Opciones de ${activo}`;
+  }
+  const comparar = $("#btn-comparar");
+  if (comparar) comparar.textContent = "Comparar los 5 algoritmos";
+  $$("[id='btn-ejecutar']").slice(1).forEach(b => b.remove());
+  $$("[id='btn-comparar']").slice(1).forEach(b => b.remove());
+}
+
+function mejorarTextosResultado() {
+  const titulos = $$(".kpi .t");
+  const detalles = $$(".kpi .d");
+  [["Distancia final", "menor es mejor"], ["Cerca de la mejor", "contra la mejor conocida"], ["Cuanto mejoro", "frente a su primera ruta"], ["Mejor intento", "intentos usados"]]
+    .forEach(([t, d], i) => {
+      if (titulos[i]) titulos[i].textContent = t;
+      if (detalles[i]) detalles[i].textContent = d;
+    });
+  const tarjetas = $$("#resultado .tarjeta");
+  tarjetas.forEach(card => {
+    const h3 = card.querySelector("h3");
+    if (!h3) return;
+    if (h3.textContent.includes("Curva")) h3.textContent = "Como fue mejorando";
+    if (h3.textContent.includes("Verificaciones")) h3.textContent = "Comprobaciones automaticas";
+  });
+  const leyenda = $("#g-conv")?.nextElementSibling;
+  if (leyenda) leyenda.textContent = "La linea baja cuando el algoritmo encuentra una ruta mejor. Si se queda plana, paso un rato sin mejorar.";
+  const sum = $("details.json summary");
+  if (sum) sum.textContent = "Ver datos tecnicos";
+}
+
 function pintarEjecutar() {
   const e = ESTADO.ej, cfg = ESTADO.config.config;
   if (!e.presupuesto) e.presupuesto = presupuestoPorDefecto(nActual());
@@ -90,6 +162,10 @@ function pintarEjecutar() {
         <div class="algoritmos">${algs.map(a => `
           <button class="alg ${a === e.alg ? "activo" : ""}" data-alg="${a}" style="--c:${varColor(a)}">
             <b>${a}</b><span>${INFO[a].nombre}</span>${a === "ACO+2opt" ? '<span class="tag">opcional</span>' : ""}</button>`).join("")}</div>
+        <div class="accion-ejecutar">
+          <button class="boton boton-ejecutar" id="btn-ejecutar">Ejecutar ${e.alg}</button>
+          <button class="boton secundario" id="btn-comparar">Comparar los 5 algoritmos</button>
+        </div>
       </div>
       <div class="tarjeta"><h3>3 · Parámetros de ${e.alg}</h3><div id="params"></div>
         <button class="boton" id="btn-ejecutar">▶ Ejecutar ${e.alg}</button>
@@ -98,6 +174,8 @@ function pintarEjecutar() {
     </aside>
     <section id="resultado"></section>
   </div>`;
+
+  mejorarTextosEjecutar(algs, e.alg);
 
   // n
   const selectorN = segmentado([...cfg.tamanos, "otro"], e.n, v => {
@@ -143,7 +221,7 @@ async function mostrarVistaPrevia() {
   const r = $("#resultado");
   r.innerHTML = `
     <div class="tarjeta"><div class="cabeza"><h3>${ptoAlg(a)}${a} · ${info.nombre}</h3><span class="etiqueta">${info.familia}</span></div>
-      <div class="explica" style="--c:${varColor(a)}"><h4>¿Cómo funciona?</h4><p>${info.idea}</p><div class="formula">${info.formula}</div><p class="sub">${info.como}</p></div>
+      <div class="explica" style="--c:${varColor(a)}"><h4>Como funciona</h4>${resumenAlgoritmo(a)}</div>
     </div>
     <div class="tarjeta"><div class="cabeza"><h3>Mapa de la instancia</h3><span class="sub" id="desc-inst"></span></div>
       <div style="max-width:520px;margin:auto" id="mapa-previo"><div class="vacio">…</div></div>
@@ -213,11 +291,12 @@ function pintarResultado(d) {
         <details class="json" style="margin-top:12px"><summary>Ver el diccionario que devolvió <code>optimizar()</code></summary><pre>${jsonCorto(d)}</pre></details>
       </div>
       <div class="tarjeta"><h3>¿Qué hizo ${a}?</h3>
-        <div class="explica" style="--c:${varColor(a)}"><p>${info.idea}</p><div class="formula">${info.formula}</div><p class="sub">${info.como}</p></div>
+        <div class="explica" style="--c:${varColor(a)}">${resumenAlgoritmo(a)}</div>
         <p class="sub">Parámetros usados: ${Object.entries(d.parametros).map(([k, x]) => `<code>${k}=${x ?? "n"}</code>`).join(" · ")}</p>
       </div>
     </div>`;
 
+  mejorarTextosResultado();
   const actualizarRuta = G.ruta($("#g-ruta"), { ciudades: d.ciudades, ruta: d.mejor_ruta, color: color(a) });
   const xs = d.historial.map(h => h[0]), ys = d.historial.map(h => h[1]);
   G.lineas($("#g-conv"), {

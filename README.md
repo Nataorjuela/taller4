@@ -5,39 +5,103 @@ algoritmo genético (GA), colonia de hormigas (ACO), enjambre de partículas (PS
 y temple simulado (SA), con el mismo presupuesto de evaluaciones de la función objetivo (FEs).
 Incluye el híbrido opcional **ACO + 2-opt** y una **interfaz gráfica** para explorar todo.
 
+**Estudiantes:** Jimmy Millán, Santiago León y Natalia Orjuela.
+
 ---
 
-## Inicio rápido (Windows + VS Code)
+## Ejecutar en un PC local (Windows + VS Code)
 
-1. Descomprima el zip y abra en VS Code la carpeta **`taller4`** (Archivo → Abrir carpeta…).
-   Debe ser la carpeta que contiene este README.
-2. Abra una terminal (`Ctrl + ñ`) y ejecute:
+1. Instale Python 3.11 y Git. Clone el repositorio y entre a la carpeta del proyecto desde PowerShell:
+
+   ```powershell
+   git clone https://github.com/Nataorjuela/taller4.git
+   cd taller4
+   ```
+
+   Si descargó el proyecto como ZIP, descomprímalo y abra en VS Code la carpeta `taller4`
+   (la carpeta que contiene este README); en ese caso, omita `git clone`.
+2. Cree el entorno virtual e instale las dependencias:
 
    ```powershell
    python -m venv .venv
-   .venv\Scripts\Activate.ps1
-   python -m pip install -r requirements.txt
+   .\.venv\Scripts\python.exe -m pip install --upgrade pip
+   .\.venv\Scripts\python.exe -m pip install -r requirements.txt
    ```
 
-   Si Windows dice que la ejecución de scripts está deshabilitada, ejecute una sola vez
-   `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` y vuelva a activar el entorno.
-   Si `python` no se reconoce, use `py` en su lugar.
-   Si la instalación falla por alguna versión (por ejemplo con Python 3.14), instale sin fijar versiones:
-   `python -m pip install numpy pandas matplotlib scipy`
-3. En VS Code: `Ctrl + Shift + P` → **Python: Select Interpreter** → elija el que dice `.venv`.
-4. Abra la interfaz gráfica:
+   Si `python` no se reconoce, cree el entorno con
+   `py -3.11 -m venv .venv` y use `.\.venv\Scripts\python.exe` para los comandos siguientes.
+3. Compruebe la instalación:
 
    ```powershell
-   python interfaz_grafica.py
+   .\.venv\Scripts\python.exe -m pytest -q pruebas/test_algoritmos.py
    ```
 
-   Se abre sola en el navegador en **http://localhost:8765**.
-   Si no se abre, copie esa dirección en Chrome o Edge. Para cerrarla: `Ctrl + C` en la terminal.
+4. Inicie la interfaz gráfica local:
 
-   Otra forma: panel **Ejecutar y depurar** (`Ctrl + Shift + D`) → elija
-   **★ INTERFAZ GRÁFICA (abre el navegador)** → ▶.
+   ```powershell
+   .\.venv\Scripts\python.exe interfaz_grafica.py
+   ```
+
+   Abra **http://localhost:8765** en Chrome o Edge si no se abre automáticamente. Detenga el
+   servidor con `Ctrl + C`. Para usar otro puerto, agregue `--puerto 9000`.
 
 No hace falta volver a correr el experimento: los resultados oficiales (2 700 corridas) ya vienen en `resultados/`.
+
+## Ejecutar en Google Colab
+
+Colab sirve para instalar las dependencias, ejecutar las pruebas y volver a generar los experimentos
+y sus análisis. La interfaz web está pensada para ejecutarse en un PC local; el servidor escucha en
+`127.0.0.1`, por lo que `localhost` de Colab no es el navegador de tu PC. Para explorar la interfaz,
+sigue los pasos de la sección anterior.
+
+En un cuaderno nuevo de Colab, ejecuta estas instrucciones en celdas separadas y en orden:
+
+1. Clona el repositorio y cambia al directorio del proyecto:
+
+   ```python
+   !git clone https://github.com/Nataorjuela/taller4.git
+   %cd /content/taller4
+   ```
+
+2. Instala las dependencias declaradas por el proyecto:
+
+   ```python
+   !python -m pip install -r requirements.txt
+   ```
+
+3. Ejecuta las pruebas:
+
+   ```python
+   !python -m pytest -q pruebas/test_algoritmos.py
+   ```
+
+4. (Opcional) Ejecuta una prueba experimental rápida y genera sus tablas y figuras:
+
+   ```python
+   !python ejecutar_experimentos.py --config configuracion_rapida.json
+   !python experimentos/analizar_resultados.py --config configuracion_rapida.json
+   ```
+
+5. Para repetir el experimento completo en vez del rápido, ejecuta estos comandos en su lugar.
+   Puede tardar entre 30 y 40 minutos; Colab puede interrumpir sesiones largas:
+
+   ```python
+   !python ejecutar_experimentos.py --config configuracion.json
+   !python experimentos/analizar_resultados.py --config configuracion.json
+   ```
+
+Los archivos de Colab se pierden al eliminar el entorno de ejecución. Si necesitas conservar los
+resultados generados, monta Google Drive antes del paso 4 o 5 y copia allí las carpetas al terminar:
+
+```python
+from google.colab import drive
+drive.mount("/content/drive")
+```
+
+```python
+!mkdir -p /content/drive/MyDrive/taller4
+!cp -r resultados figuras /content/drive/MyDrive/taller4/
+```
 
 ---
 
@@ -73,14 +137,15 @@ Opciones: `python interfaz_grafica.py --puerto 9000` (otro puerto) · `--no-abri
 ## Ejecutar el experimento desde la terminal
 
 ```powershell
-python pruebas/test_algoritmos.py                                  # 1) pruebas (≈ 5 s)
-python experimentos/piloto.py                                      # 2) fase piloto (opcional, ≈ 3 min)
-python ejecutar_experimentos.py --config configuracion.json        # 3) experimento completo (30-40 min)
-python experimentos/analizar_resultados.py --config configuracion.json   # 4) tablas y figuras
+.\.venv\Scripts\python.exe -m pytest -q pruebas/test_algoritmos.py   # 1) pruebas
+.\.venv\Scripts\python.exe experimentos/piloto.py                    # 2) piloto (opcional)
+.\.venv\Scripts\python.exe ejecutar_experimentos.py --config configuracion.json
+.\.venv\Scripts\python.exe experimentos/analizar_resultados.py --config configuracion.json
 ```
 
 - Cada corrida se guarda apenas termina en `resultados/corridas.jsonl`. Si el proceso se interrumpe, al relanzarlo continúa donde iba.
 - Todos los parámetros están en `configuracion.json`: para repetir con otros valores se cambia ese archivo, no el código.
+- Para una ejecución de prueba más corta, reemplaza `configuracion.json` por `configuracion_rapida.json` en los dos últimos comandos.
 
 **Importante:** los archivos de `src/` son módulos (piezas) y no se ejecutan solos. Si le da ▶ a `src/interfaz.py`,
 aparece el error *"attempted relative import with no known parent package"*. Ejecute siempre los archivos de la raíz,

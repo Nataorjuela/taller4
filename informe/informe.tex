@@ -37,9 +37,9 @@
 \begin{abstract}
 Se comparan cinco metaheurísticas sobre el TSP euclidiano con $n\in\{20,50,100\}$ ciudades (5 instancias por tamaño, 30 ejecuciones independientes por combinación),
 bajo un presupuesto idéntico de evaluaciones de la función objetivo (10\,000, 30\,000 y 60\,000 FEs) y semillas emparejadas. ACO obtuvo las rutas más cortas y más estables en
-todos los tamaños (error mediano 0{,}00/0{,}66/2{,}66\,\%); SA fue segundo para $n\ge50$; HC fue el más rápido (0{,}06\,s con $n=100$, $\approx90$ veces menos que ACO);
-PSO con claves aleatorias fue el peor por amplio margen. La prueba de Friedman rechazó la igualdad en los tres tamaños ($p<10^{-16}$), con un tamaño del efecto creciente
-($W=0{,}63\to0{,}92$). No existe un ganador absoluto: la mejor calidad (ACO) no coincide con el menor tiempo (HC) ni con la menor memoria medida en los tamaños grandes (GA).
+todos los tamaños (error mediano 0{,}00/0{,}66/2{,}66\,\%); SA ocupó el segundo lugar en el ranking global para $n=50$ y $n=100$; HC fue el más rápido (0{,}06\,s frente a 5{,}23\,s de ACO con $n=100$);
+PSO con claves aleatorias presentó los errores más altos entre los métodos evaluados. La prueba de Friedman rechazó la igualdad en los tres tamaños ($p<10^{-16}$), con un tamaño del efecto creciente
+($W=0{,}63\to0{,}92$). No existe un único algoritmo que sea mejor en todos los criterios: ACO obtuvo la mejor calidad, HC los menores tiempos de ejecución y GA el menor consumo de memoria medido para $n=50$ y $n=100$.
 \end{abstract}
 
 \section{Metodología}
@@ -47,8 +47,8 @@ PSO con claves aleatorias fue el peor por amplio margen. La prueba de Friedman r
 Todas las implementaciones usan la misma matriz de distancias y la misma función objetivo, centralizadas en un objeto \texttt{Evaluador} que cuenta las FEs, conserva la mejor solución histórica
 y registra el historial (FEs, mejor costo). Ningún algoritmo puede exceder el presupuesto.
 
-\textbf{Algoritmos y codificación} (Tabla~\ref{tab:alg}). HC y SA comparten el mismo generador de vecinos 2-opt; el cambio de costo se calcula en $O(1)$ con
-$\Delta=d_{ac}+d_{bd}-d_{ab}-d_{cd}$ y cada vecino evaluado cuenta como 1 FE (se verificó que $\Delta$ coincide con recalcular $f$).
+\textbf{Algoritmos y codificación} (Tabla~\ref{tab:alg}). HC y SA utilizan el mismo generador de vecinos basado en 2-opt. Este movimiento elimina las aristas $(a,b)$ y $(c,d)$ de la ruta y las reemplaza por $(a,c)$ y $(b,d)$. Así, el cambio de costo se calcula en $O(1)$, sin recalcular la longitud de toda la ruta, mediante
+$\Delta=d_{ac}+d_{bd}-d_{ab}-d_{cd}$. Cada vecino evaluado cuenta como 1 FE; se verificó que $\Delta$ coincide con el cambio obtenido al recalcular $f$.
 \begin{table}[H]\centering\small
 \begin{tabular}{>{\raggedright}p{1.1cm}>{\raggedright}p{2.6cm}>{\raggedright}p{6.7cm}>{\raggedright\arraybackslash}p{4.6cm}}
 \toprule
@@ -108,10 +108,9 @@ $n$ & Alg. & tiempo (s) & ms/1000 FEs & memoria (MB) & éxito (\%) & FEs al 1\% 
 
 \caption{Tiempo, memoria, tasa de éxito y FEs necesarias para error $\le1\text{\%}$ (mediana entre las corridas que llegaron; ``llegaron'' de 150).}\label{tab:ef}
 \end{table}
-HC y SA son los más rápidos (0{,}06--0{,}07\,s con $n=100$) y su costo por FE es casi constante ($\approx1$\,ms/1000 FEs), gracias a la evaluación incremental $O(1)$.
-ACO escala peor en tiempo (28$\to$87\,ms/1000 FEs) porque construir una ruta cuesta $O(n^2)$, y en memoria ($\times22$ de $n=20$ a $n=100$) por sus matrices $n\times n$.
-GA usa la menor memoria medida para $n=50$ y $n=100$ (con empate práctico entre GA y ACO en $n=20$), pero su costo por FE ($\approx70$\,ms/1000) está dominado por operaciones en Python. En calidad, ACO es quien mejor escala: es el único que alcanza el umbral del 1\,\%
-de forma recurrente con $n=100$ (26/150 corridas; SA 6/150). Rapidez y calidad no coinciden: HC termina 90 veces antes que ACO pero con el triple de error.
+HC y SA presentan los menores tiempos de ejecución; para $n=100$, sus tiempos son aproximadamente 0{,}06 y 0{,}07\,s, respectivamente. Su bajo costo por FE ($\approx1$\,ms/1000 FEs) se relaciona con la evaluación incremental $O(1)$ de los movimientos 2-opt.
+En cambio, el tiempo de ACO aumenta más al crecer $n$ (28$\to$87\,ms/1000 FEs), debido al proceso de construcción de rutas, cuyo costo es $O(n^2)$, y al uso de matrices $n\times n$, que también inciden en su mayor consumo de memoria ($\times22$ de $n=20$ a $n=100$).
+GA registra el menor consumo de memoria medido para $n=50$ y $n=100$ (con empate práctico entre GA y ACO en $n=20$), aunque su costo por FE ($\approx70$\,ms/1000) está dominado por operaciones en Python. Estos resultados muestran que un menor tiempo de ejecución no implica necesariamente una mejor calidad: para $n=100$, ACO alcanzó el error $\le1\text{\%}$ en 26 de 150 ejecuciones, frente a 6 de 150 para SA.
 
 \subsection{Convergencia, calidad y estabilidad}
 \begin{figure}[H]\centering
@@ -149,9 +148,9 @@ $n$ & Alg. & mejor & media & mediana & desv.$^\dagger$ & RIC & éxito (\%) & mej
 
 \caption{Error relativo final (\%). $^\dagger$Desviación estándar dentro de cada instancia, promediada. El costo absoluto (mejor, media, mediana y desviación) por instancia está en \texttt{resultados/tabla\_rendimiento\_por\_instancia.csv}.}\label{tab:rend}
 \end{table}
-ACO arranca con rutas buenas gracias a la visibilidad $1/d$ y mantiene la ventaja durante todo el presupuesto (Fig.~\ref{fig:conv}). HC desciende rápido y se estanca;
-SA muestra la forma en ``S'' típica: explora con temperatura alta y cae al enfriarse, superando a HC para $n\ge50$. GA aún mejora al final del presupuesto (mejor solución en la FE mediana del 98\,\% con $n=100$);
-PSO se estanca debido a la falta de localidad de las claves aleatorias. La Fig.~\ref{fig:rutas} muestra las rutas de la corrida mediana: ACO, SA y HC no presentan cruces; PSO está lleno de ellos.
+ACO encuentra buenas rutas desde las primeras etapas, gracias a la visibilidad $1/d$, y conserva una ventaja durante gran parte del presupuesto (Fig.~\ref{fig:conv}). HC mejora rápidamente al inicio, pero después tiende a estancarse.
+Al principio, SA explora más alternativas debido a la temperatura; conforme esta disminuye, la búsqueda se concentra en mejorar las soluciones encontradas. Para $n=50$ y $n=100$, SA obtiene mejores resultados finales que HC. GA continúa encontrando mejoras cerca del final del presupuesto, especialmente para $n=100$ (mejor solución en la FE mediana del 98\,\%), lo que sugiere que podría beneficiarse de un presupuesto mayor.
+PSO presenta dificultades para mejorar las rutas: pequeños cambios en su vector continuo de claves no necesariamente generan cambios pequeños o favorables en la ruta que resulta al ordenar sus componentes. La Fig.~\ref{fig:rutas} muestra las rutas de la corrida mediana: ACO, SA y HC no presentan cruces, mientras que PSO presenta varios.
 \begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{fig4d_rutas.png}
 \caption{Ruta de la corrida mediana de cada método en la instancia 0 con $n=50$ (entre paréntesis, error respecto a $f^\ast$).}\label{fig:rutas}
@@ -196,7 +195,7 @@ HC vs SA & HC ($-$0{,}21; 0{,}0258) & SA (0{,}65; $<10^{-4}$) & SA (0{,}92; $<10
 \begin{table}[H]\centering\small
 \begin{tabular}{clccccrrr}
 \toprule
-$n$ & Alg. & calidad & estab. & veloc. & global & $\bar R$ & desv. error & AUC \\
+$n$ & Alg. & calidad & estab. & converg. & global & $\bar R$ & desv. error & AUC \\
 \midrule
 20 & ACO & 1 & 1 & 1 & \textbf{1} & 1{,}84 & 0{,}05 & 2{,}5 \\
  & HC & 2 & 2 & 2 & \textbf{2} & 2{,}31 & 0{,}89 & 22{,}9 \\
@@ -218,35 +217,33 @@ $n$ & Alg. & calidad & estab. & veloc. & global & $\bar R$ & desv. error & AUC \
 \bottomrule
 \end{tabular}
 
-\caption{Ranking por calidad (rango de Friedman), estabilidad (desviación del error dentro de instancia) y velocidad (área bajo la curva de error en $\log$ FEs).}\label{tab:rank}
+\caption{Ranking por calidad (rango de Friedman), estabilidad (desviación del error dentro de instancia) y velocidad de convergencia (área bajo la curva de error en $\log$ FEs; AUC).}\label{tab:rank}
 \end{table}
-Las diferencias son significativas en todos los pares y tamaños. El tamaño del efecto crece con $n$: $W$ pasa de 0{,}63 a 0{,}92 y la ventaja de ACO sobre HC de biserial 0{,}51 a 1{,}00.
-La única diferencia pequeña es HC vs.\ SA con $n=20$ (biserial $-0{,}21$, $p=0{,}026$), que se invierte con fuerza a favor de SA para $n=50$ y $n=100$.
+Las pruebas estadísticas muestran diferencias significativas entre los algoritmos en los tres tamaños evaluados. Además, estas diferencias se hacen más marcadas a medida que aumenta el número de ciudades: el $W$ de Kendall pasa de 0{,}63 con $n=20$ a 0{,}92 con $n=100$.
+La diferencia entre HC y SA es pequeña con $n=20$ (biserial $-0{,}21$, $p=0{,}026$), pero cambia a favor de SA con $n=50$ y $n=100$.
 
 \section{Discusión}
 \begin{enumerate}[leftmargin=1.2em]
-\item \textbf{Menor costo y mayor estabilidad:} ACO en los tres tamaños (Tablas~\ref{tab:rend} y~\ref{tab:rank}).
-\item \textbf{Buenas soluciones con menos FEs:} ACO (mediana de 242 FEs para error $\le1\text{\%}$ con $n=20$; 7713 con $n=50$). HC es el siguiente en velocidad de convergencia.
-\item \textbf{Menor tiempo:} HC; \textbf{menor memoria medida:} GA en los tamaños grandes (con empate práctico frente a ACO en $n=20$). No coinciden con el de mejor calidad: ACO es el más lento y el de mayor memoria solo con $n=100$.
-\item \textbf{Cambio del ranking con $n$:} extremos estables (ACO 1.º, PSO 5.º, GA 4.º); HC y SA se intercambian: con 20 ciudades los reinicios de HC bastan, con 50 y 100 la aceptación de empeoramientos de SA es decisiva.
-\item \textbf{Población vs.\ trayectoria:} la población ayuda cuando comparte información útil (feromona + heurística en ACO); en GA, con presupuesto fijo, cada generación consume $P-2$ FEs y OX rompe aristas buenas, así que converge lento;
-en PSO la codificación impide aprovechar la memoria personal y social. La trayectoria única es barata por FE y explota bien la vecindad 2-opt, pero se atasca en óptimos locales.
-\item \textbf{Aceptar empeoramientos / diversidad:} útil cuando el paisaje tiene muchos óptimos locales y hay presupuesto para enfriar: SA reduce a la mitad el error de HC con $n=50$ y $n=100$, pero con 10\,\% del presupuesto va 4--5 veces peor.
-Demasiada diversidad es dañina (piloto: GA con $p_m=0{,}6$ y $P=100$ fue 7 veces peor).
-\item \textbf{No hay ganador absoluto} (coherente con el teorema \emph{No Free Lunch}). Respuesta rápida: HC con 2-opt; alta calidad: ACO; menor memoria medida en este experimento: GA. Si se busca una implementación de trayectoria con poca memoria teórica, SA puede usar una sola ruta y calcular distancias al vuelo.
+\item \textbf{Menor costo y mayor estabilidad:} ACO obtuvo las rutas de menor costo y presentó la mayor estabilidad en los tres tamaños. Sus errores medianos fueron 0{,}00\,\%, 0{,}66\,\% y 2{,}66\,\% para $n=20$, $n=50$ y $n=100$, respectivamente; además, la menor variabilidad observada en sus resultados respalda esta conclusión (Tablas~\ref{tab:rend} y~\ref{tab:rank}).
+\item \textbf{Error $\le1\text{\%}$ con menos FEs:} ACO fue el algoritmo que alcanzó el error $\le1\text{\%}$ con menos evaluaciones. Para 20 ciudades necesitó una mediana de 242 FEs para llegar a ese umbral, y para 50 ciudades necesitó 7.713. En 100 ciudades siguió siendo el método que alcanzó este umbral con mayor frecuencia, aunque solo lo logró en 26 de las 150 ejecuciones.
+\item HC fue el algoritmo con menor tiempo de ejecución, mientras que GA presentó el menor consumo de memoria para 50 y 100 ciudades. Esto no coincide con el algoritmo de mejor calidad, ya que ACO produjo las mejores soluciones, pero tuvo un costo computacional mayor, especialmente al aumentar el número de ciudades.
+\item El ranking se mantuvo relativamente estable para ACO, GA y PSO. ACO ocupó el primer lugar en todos los tamaños, GA se mantuvo cuarto y PSO quinto. El principal cambio ocurrió entre HC y SA: con 20 ciudades HC tuvo mejores resultados, pero al aumentar a 50 y 100 ciudades SA pasó a superarlo.
+\item Los resultados muestran que trabajar con una población no garantiza por sí solo mejores resultados. En ACO, las hormigas comparten información mediante las feromonas y esto ayuda a orientar la búsqueda hacia rutas prometedoras. En cambio, GA necesita varias evaluaciones en cada generación y puede perder partes buenas de una ruta durante el cruce. En PSO, la representación mediante claves aleatorias tampoco permitió aprovechar bien la información de las mejores soluciones. Por otro lado, HC y SA trabajan sobre una sola solución y pueden avanzar rápidamente, aunque tienen mayor riesgo de quedar atrapados en óptimos locales.
+\item Aceptar temporalmente soluciones peores puede ser útil cuando el algoritmo corre el riesgo de quedar atrapado en un óptimo local. Esto se observa en SA: al principio puede avanzar más lentamente porque explora diferentes alternativas, pero con 50 y 100 ciudades termina obteniendo mejores resultados que HC. Algo similar ocurre con la diversidad en los métodos poblacionales: puede ayudar a explorar más soluciones, pero demasiada diversidad también puede retrasar la convergencia.
+\item No existe un ganador absoluto, porque la mejor opción depende de lo que se quiera priorizar. Si se necesita una respuesta rápida, HC sería una buena alternativa por su bajo tiempo de ejecución. Si se busca principalmente calidad, ACO obtuvo los mejores resultados. Para un escenario con memoria limitada, GA presentó el menor consumo medido en los problemas de 50 y 100 ciudades.
 \end{enumerate}
 
-\textbf{Amenaza a la validez.} $f^\ast$ es el mejor valor encontrado y no el óptimo: los errores son cotas inferiores y favorecen al algoritmo que define la referencia (ACO con $n=100$).
-Además, los parámetros se ajustaron solo con $n=50$ y los tiempos mezclan algoritmo e implementación (grado de vectorización en NumPy).
-\textbf{Mejora propuesta:} usar instancias con óptimo conocido (TSPLIB o Concorde), ajuste automático de parámetros por tamaño (irace) e implementaciones compiladas para comparar tiempos.
+\textbf{Amenaza a la validez.} $f^\ast$ corresponde al mejor valor encontrado durante los experimentos, pero no necesariamente al óptimo real de cada instancia. Por ello, el error relativo calculado respecto a $f^\ast$ puede subestimar la distancia al óptimo real. Además, la referencia puede favorecer al algoritmo que encontró la solución usada como $f^\ast$, un efecto especialmente relevante para ACO con $n=100$.
+Los parámetros se ajustaron utilizando instancias con $n=50$ y, por tanto, podrían no ser los mejores para los otros tamaños. Asimismo, los tiempos medidos pueden depender tanto del algoritmo como de diferencias de implementación, incluido el grado de vectorización en NumPy.
+\textbf{Mejoras futuras:} utilizar instancias con óptimos conocidos (TSPLIB o Concorde), ajustar los parámetros por tamaño (por ejemplo, con irace) y comparar implementaciones con niveles similares de optimización.
 
 \textbf{Híbrido ACO + 2-opt (opcional).} La mejor hormiga de cada iteración se mejora con $5n$ propuestas 2-opt (mismas FEs totales). El híbrido supera a HC (92--96\,\% de corridas para $n\ge50$) y a SA (65--74\,\%) con $p<10^{-4}$,
 pero no a ACO puro: empata con $n=20$ ($p=0{,}31$) y pierde con $n=50$ y $n=100$ (error mediano 1{,}03 vs.\ 0{,}66 y 3{,}59 vs.\ 2{,}66\,\%; $p<0{,}01$). La búsqueda local consume $5n$ FEs por iteración y reduce las iteraciones de la colonia de 600 a $\approx100$;
-es 5 veces más rápido en tiempo, así que con un criterio de parada por tiempo el balance podría invertirse.
+el híbrido fue aproximadamente 5 veces más rápido en tiempo de ejecución. Por esta razón, una comparación basada en tiempo de ejecución, en lugar de utilizar únicamente el número de FEs, podría producir resultados diferentes; estos resultados no permiten concluir que el híbrido sería necesariamente mejor con ese criterio.
 
 \section{Conclusiones}
-Una comparación justa exige controlar el problema, el presupuesto (FEs) y las semillas, y analizar a la vez calidad, costo y variabilidad. Con ese control, ACO fue el método de mejor calidad y estabilidad,
-HC y SA los de menor costo computacional (con SA claramente mejor que HC en calidad para $n\ge50$), GA quedó en un punto intermedio que mejoraría con más presupuesto, y PSO con claves aleatorias
-resultó inadecuado para el TSP. Las conclusiones se apoyan en 150 corridas emparejadas por tamaño y en pruebas no paramétricas con corrección por comparaciones múltiples, no solo en promedios.
+Una comparación entre metaheurísticas debe considerar conjuntamente la calidad de las soluciones, su estabilidad, la velocidad de convergencia y el costo computacional. En este estudio, los algoritmos se evaluaron con las mismas instancias, presupuestos de FEs y semillas, lo que permitió realizar comparaciones emparejadas.
+ACO obtuvo las soluciones de mayor calidad y presentó la mayor estabilidad. HC y SA registraron los menores tiempos de ejecución; además, SA superó a HC en calidad al aumentar el problema a 50 y 100 ciudades. GA mostró un comportamiento intermedio y continuó encontrando mejoras cerca del final del presupuesto, mientras que PSO con claves aleatorias presentó los errores más altos para este problema.
+En consecuencia, no hay un algoritmo que sea mejor en todos los criterios y la elección depende de cuál se quiera priorizar. Estas conclusiones se apoyan en 150 ejecuciones emparejadas por tamaño, el análisis de la variabilidad y las pruebas estadísticas, no únicamente en los valores promedio.
 
 \end{document}

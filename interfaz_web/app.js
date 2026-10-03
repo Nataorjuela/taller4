@@ -630,29 +630,20 @@ function pintarConclusiones() {
     ["1. ¿Qué algoritmo obtuvo las rutas de menor costo y cuál fue el más estable?",
       `<p>${NS.map(nn => `n = ${nn}: menor error mediano <b>${mejorPor(rend, nn, "error_mediana_%")}</b> (${pct(val(rend, mejorPor(rend, nn, "error_mediana_%"), nn, "error_mediana_%"))}); más estable <b>${[...ORDEN].sort((a, b) => estab(a, nn) - estab(b, nn))[0]}</b> (desv. ${f(Math.min(...ORDEN.map(a => estab(a, nn))))}).`).join("<br>")}</p>
        <p><b>Respuesta:</b> ACO en ambos casos y en todos los tamaños; gana todas sus comparaciones pareadas.</p>`],
-    ["2. ¿Cuál alcanzó buenas soluciones usando menos evaluaciones?",
-      `<p>${NS.map(nn => { const ok = ORDEN.filter(a => val(ef, a, nn, "FEs_umbral_mediana") !== null); const b = ok.sort((x, y) => val(ef, x, nn, "FEs_umbral_mediana") - val(ef, y, nn, "FEs_umbral_mediana"))[0];
-        return `n = ${nn}: <b>${b}</b> llega al 1 % con una mediana de ${f(val(ef, b, nn, "FEs_umbral_mediana"), 0)} FEs (éxito ${f(val(ef, b, nn, "exito_pct"), 1)} %).`; }).join("<br>")}</p>
-       <p><b>Respuesta:</b> ACO. Su primera ruta ya es buena porque usa la cercanía (1/d) para construir. HC es el segundo en velocidad de convergencia.</p>`],
+    ["2. ¿Cuál alcanzó el error ≤ 1 % usando menos evaluaciones?",
+      `<p><b>Respuesta:</b> ACO fue el algoritmo que alcanzó el error ≤ 1 % con menos evaluaciones. Para 20 ciudades necesitó una mediana de 242 FEs para llegar a ese umbral, y para 50 ciudades necesitó 7.713. En 100 ciudades siguió siendo el método que alcanzó este umbral con mayor frecuencia, aunque solo lo logró en 26 de las 150 ejecuciones.</p>`],
     ["3. ¿Cuál tuvo menor tiempo y consumo de memoria? ¿Coincide con el de mejor calidad?",
       `<p>${NS.map(nn => `n = ${nn}: menor tiempo <b>${mejorPor(ef, nn, "tiempo_medio_s")}</b> (${f(val(ef, mejorPor(ef, nn, "tiempo_medio_s"), nn, "tiempo_medio_s") * 1000, 1)} ms); menor memoria <b>${mejorPor(ef, nn, "memoria_media_MB")}</b> (${f(val(ef, mejorPor(ef, nn, "memoria_media_MB"), nn, "memoria_media_MB"), 3)} MB).`).join("<br>")}</p>
-       <p><b>Respuesta:</b> No coincide. El mejor en calidad (ACO) es el más lento con n = 100; en memoria, solo es el que más usa para n = 100. En los tamaños grandes la menor memoria medida la tiene GA. Hay un intercambio entre calidad y costo.</p>`],
+       <p><b>Respuesta:</b> HC fue el algoritmo con menor tiempo de ejecución, mientras que GA presentó el menor consumo de memoria para 50 y 100 ciudades. Esto no coincide con el algoritmo de mejor calidad, ya que ACO produjo las mejores soluciones, pero tuvo un costo computacional mayor, especialmente al aumentar el número de ciudades.</p>`],
     ["4. ¿Cómo cambió el ranking al aumentar el número de ciudades?",
       `<p>${NS.map(nn => `n = ${nn}: ${ordenGlobal(nn).map(a => `${ptoAlg(a)}${a}`).join(" › ")} · W de Kendall = ${f(R.friedman.find(r => r.n === nn).W_Kendall, 2)}`).join("<br>")}</p>
-       <p><b>Respuesta:</b> ACO siempre 1.º y PSO siempre último. HC y SA se intercambian: con 20 ciudades los reinicios de HC bastan; con 50 y 100 aceptar empeoramientos (SA) es decisivo. El orden se vuelve más consistente (W sube).</p>`],
+       <p><b>Respuesta:</b> El ranking se mantuvo relativamente estable para ACO, GA y PSO. ACO ocupó el primer lugar en todos los tamaños, GA se mantuvo cuarto y PSO quinto. El principal cambio ocurrió entre HC y SA: con 20 ciudades HC tuvo mejores resultados, pero al aumentar a 50 y 100 ciudades SA pasó a superarlo.</p>`],
     ["5. ¿Qué efecto tiene el componente poblacional (GA, ACO, PSO) y la trayectoria única (HC, SA)?",
-      `<p>La población ayuda <b>solo si comparte información útil</b>: en ACO la feromona es una memoria colectiva que se combina con la cercanía. En GA cada generación gasta ${ESTADO.config.config.parametros.GA.poblacion - 2} evaluaciones y el cruce rompe aristas buenas: converge lento (sigue mejorando al final). En PSO la codificación por claves impide aprovechar la memoria.
-       La trayectoria única (HC, SA) es barata por evaluación y explota bien la vecindad 2-opt, pero puede atascarse en óptimos locales.</p>`],
+      `<p>Los resultados muestran que trabajar con una población no garantiza por sí solo mejores resultados. En ACO, las hormigas comparten información mediante las feromonas y esto ayuda a orientar la búsqueda hacia rutas prometedoras. En cambio, GA necesita varias evaluaciones en cada generación y puede perder partes buenas de una ruta durante el cruce. En PSO, la representación mediante claves aleatorias tampoco permitió aprovechar bien la información de las mejores soluciones. Por otro lado, HC y SA trabajan sobre una sola solución y pueden avanzar rápidamente, aunque tienen mayor riesgo de quedar atrapados en óptimos locales.</p>`],
     ["6. ¿Cuándo resulta útil aceptar empeoramientos (SA) o mantener diversidad?",
-      `<p>Cuando hay <b>muchos óptimos locales</b> y <b>presupuesto para enfriar</b>. Con n = 20, HC ≈ SA; con n = 50 el error mediano pasa de ${pct(val(rend, "HC", 50, "error_mediana_%"))} (HC) a ${pct(val(rend, "SA", 50, "error_mediana_%"))} (SA) y con n = 100 de ${pct(val(rend, "HC", 100, "error_mediana_%"))} a ${pct(val(rend, "SA", 100, "error_mediana_%"))}.
-       Pero si el presupuesto se corta temprano, SA va perdiendo (mire su curva en "S" en la pestaña 4). Demasiada diversidad también daña: en el piloto, GA con mutación 0,6 fue mucho peor.</p>`],
+      `<p>Aceptar temporalmente soluciones peores puede ser útil cuando el algoritmo corre el riesgo de quedar atrapado en una solución local. Esto se observa en SA: al principio puede avanzar más lentamente porque explora diferentes alternativas, pero con 50 y 100 ciudades termina obteniendo mejores resultados que HC. Algo similar ocurre con la diversidad en los métodos poblacionales: puede ayudar a explorar más soluciones, pero demasiada diversidad también puede retrasar la convergencia.</p>`],
     ["7. ¿Existe un ganador absoluto? ¿Qué usar en cada escenario?",
-      `<p><b>No.</b> Ningún algoritmo gana en calidad, tiempo y memoria a la vez (teorema "No Free Lunch").</p>
-       <table><tr><th>Escenario</th><th>Algoritmo recomendado</th><th class="izq">Por qué</th></tr>
-         <tr><td class="izq">Respuesta rápida</td><td>${ptoAlg("HC")}HC (o SA)</td><td class="izq">milisegundos, ruta sin cruces</td></tr>
-         <tr><td class="izq">Alta calidad</td><td>${ptoAlg("ACO")}ACO</td><td class="izq">mejor y más estable en todos los tamaños</td></tr>
-         <tr><td class="izq">Menor memoria medida</td><td>${ptoAlg("GA")}GA</td><td class="izq">usa menos memoria en n = 50 y n = 100; en n = 20 empata prácticamente con ACO</td></tr>
-         <tr><td class="izq">Memoria teórica baja</td><td>${ptoAlg("SA")}SA</td><td class="izq">puede guardar una sola ruta y calcular distancias al vuelo; 2.º en calidad</td></tr></table>`],
+      `<p>No existe un ganador absoluto, porque la mejor opción depende de lo que se quiera priorizar. Si se necesita una respuesta rápida, HC sería una buena alternativa por su bajo tiempo de ejecución. Si se busca principalmente calidad, ACO obtuvo los mejores resultados. Para un escenario con memoria limitada, GA presentó el menor consumo medido en los problemas de 50 y 100 ciudades.</p>`],
   ];
 
   const fuerza = r => r >= 0.9 ? "muy clara" : r >= 0.65 ? "clara" : r >= 0.35 ? "moderada" : "pequeña";
@@ -775,4 +766,3 @@ observarTexto();
     $("#contenido").innerHTML = `<div class="tarjeta vacio">No se pudo conectar con el servidor. ¿Está corriendo <code>python interfaz_grafica.py</code>?<br>${e.message}</div>`;
   }
 })();
-
